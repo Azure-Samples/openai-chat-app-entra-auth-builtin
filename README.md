@@ -10,6 +10,14 @@ The project includes all the infrastructure and configuration needed to setup Mi
 We recommend first going through the [deploying steps](#deploying) before running this app locally,
 since the local app needs credentials for Azure OpenAI to work properly.
 
+* [Features](#features)
+* [Opening the project](#opening-the-project)
+* [Deploying](#deploying)
+* [Development server](#development-server)
+* [Costs](#costs)
+* [Security Guidelines](#security-guidelines)
+* [Resources](#resources)
+
 ## Features
 
 * A Python [Quart](https://quart.palletsprojects.com/en/latest/) backend that uses the [openai](https://pypi.org/project/openai/) package to generate responses to user messages.
