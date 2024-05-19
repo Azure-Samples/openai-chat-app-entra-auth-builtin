@@ -25,7 +25,7 @@ since the local app needs credentials for Azure OpenAI to work properly.
 * [Bicep files](https://docs.microsoft.com/azure/azure-resource-manager/bicep/) for provisioning Azure resources, including an Azure OpenAI resource, Azure Container Apps (with authentication configuration), and Azure Container Registry.
 * Python scripts that use the [msgraph-sdk](https://pypi.org/project/msgraph-sdk/) package to create a Microsoft Entra application and service principal, and to grant the service principal permissions to the application.
 
-![Screenshot of the chat app](docs/screenshot_chatapp.png)
+![Screenshot of the chat app](/docs/screenshot_chatapp.png)
 
 ## Opening the project
 
@@ -57,7 +57,7 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 2. Request access to Azure OpenAI Service by completing the form at [https://aka.ms/oai/access](https://aka.ms/oai/access) and awaiting approval.
 3. Check that you have the necessary permissions:
 
-    * Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). If you don't have subscription-level permissions, you must be granted [RBAC](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview) for an existing resource group and [deploy to that existing group](docs/deploy_existing.md#resource-group).
+    * Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). If you don't have subscription-level permissions, you must be granted [RBAC](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview) for an existing resource group and [deploy to that existing group](/docs/deploy_existing.md#resource-group).
     * Your Azure account also needs `Microsoft.Resources/deployments/write` permissions on the subscription level.
 
 ### Microsoft Entra ID setup
@@ -179,7 +179,7 @@ python -m quart --app src.quartapp run --port 50505 --reload
 
 This will start the app on port 50505, and you can access it at `http://localhost:50505`.
 
-To save costs during development, you may point the app at a [local LLM server](docs/local_ollama.md).
+To save costs during development, you may point the app at a [local LLM server](/docs/local_ollama.md).
 
 ## Costs
 
