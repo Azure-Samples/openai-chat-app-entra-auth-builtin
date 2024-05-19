@@ -7,7 +7,7 @@ This repository includes a Python app that uses Azure OpenAI to generate respons
 
 The project includes all the infrastructure and configuration needed to setup Microsoft Entra authentication, provision Azure OpenAI resources (with keyless access), and deploy the app to [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) using the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview).
 
-We recommend first going through the [deployment steps](#deployment) before running this app locally,
+We recommend first going through the [deploying steps](#deploying) before running this app locally,
 since the local app needs credentials for Azure OpenAI to work properly.
 
 ## Features
@@ -39,7 +39,7 @@ If you're not using one of those options for opening the project, then you'll ne
     python -m pip install -e src
     ```
 
-## Deployment
+## Deploying
 
 Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
 
@@ -126,7 +126,7 @@ To configure, follow these steps:
 
 1. Now proceed with the [deployment steps](#deployment) below.
 
-### Deployment
+### Deploying with azd
 
 Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [Microsoft Entra External ID](#microsoft-entra-external-id-setup), you can proceed to deploy the app.
 
@@ -151,23 +151,7 @@ Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [M
     azd deploy
     ```
 
-### Deployment with existing resources
-
-If you already have an OpenAI resource and would like to re-use it, first follow these steps.
-
-1. Run `azd env new` to create a new environment. Provide a name that will be used in the name of *new* resources that are created.
-2. Run `azd env set` to specify the values for the existing OpenAI resource.
-
-   ```shell
-   azd env set AZURE_OPENAI_RESOURCE {name of OpenAI resource}
-   azd env set AZURE_OPENAI_RESOURCE_GROUP {name of resource group that it's inside}
-   azd env set AZURE_OPENAI_RESOURCE_GROUP_LOCATION {location for that group}
-   azd env set AZURE_OPENAI_SKU_NAME {name of the SKU, defaults to "S0"}
-   ```
-
-3. Then follow the steps for deployment above.
-
-### CI/CD pipeline
+### Continuous deployment with GitHub Actions
 
 This project includes a Github workflow for deploying the resources to Azure
 on every push to main. That workflow requires several Azure-related authentication secrets
@@ -179,7 +163,7 @@ azd pipeline config
 
 ## Development server
 
-Assuming you've run the steps in [Opening the project](#opening-the-project) and have run `azd up`, you can now run the Quart app in your development environment:
+Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deployment), you can now run the Quart app in your development environment:
 
 ```shell
 python -m quart --app src.quartapp run --port 50505 --reload

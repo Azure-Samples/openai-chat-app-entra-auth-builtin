@@ -146,7 +146,7 @@ module authClientSecretStorage 'core/security/keyvault-secret.bicep' = if (!empt
       secretValue: authClientSecret
     }
   }
-  
+
 // Container app frontend
 module aca 'aca.bicep' = {
   name: 'aca'

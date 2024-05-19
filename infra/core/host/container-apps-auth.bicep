@@ -39,4 +39,3 @@ resource auth 'Microsoft.App/containerApps/authConfigs@2023-05-01' = {
     }
   }
 }
-
