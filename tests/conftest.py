@@ -1,6 +1,10 @@
+import os
+from unittest import mock
+
 import openai
 import pytest
 import pytest_asyncio
+from azure.keyvault.secrets.aio import SecretClient
 
 import quartapp
 
@@ -126,14 +130,28 @@ def mock_defaultazurecredential(monkeypatch):
     monkeypatch.setattr("azure.identity.aio.ManagedIdentityCredential", mock_cred.MockAzureCredential)
 
 
+@pytest.fixture
+def mock_keyvault_secretclient(monkeypatch):
+    monkeypatch.setenv("AZURE_KEY_VAULT_NAME", "my_key_vault")
+    monkeypatch.setenv("OPENAICOM_API_KEY_SECRET_NAME", "my_secret_name")
+
+    async def get_secret(*args, **kwargs):
+        if args[1] == "my_secret_name":
+            return mock_cred.MockKeyVaultSecret("mysecret")
+        raise Exception(f"Unexpected secret name: {args[1]}")
+
+    monkeypatch.setattr(SecretClient, "get_secret", get_secret)
+
+
 @pytest_asyncio.fixture
 async def client(monkeypatch, mock_openai_chatcompletion, mock_defaultazurecredential):
-    monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
-    monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
+    with mock.patch.dict(os.environ, clear=True):
+        monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
+        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
 
-    quart_app = quartapp.create_app()
+        quart_app = quartapp.create_app()
 
-    async with quart_app.test_app() as test_app:
-        quart_app.config.update({"TESTING": True})
+        async with quart_app.test_app() as test_app:
+            quart_app.config.update({"TESTING": True})
 
-        yield test_app.test_client()
+            yield test_app.test_client()

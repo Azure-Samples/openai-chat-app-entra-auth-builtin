@@ -1,3 +1,7 @@
+from unittest import mock
+import os
+
+import openai
 import pytest
 
 import quartapp
@@ -44,40 +48,56 @@ async def test_chat_stream_text_history(client, snapshot):
 
 
 @pytest.mark.asyncio
-async def test_openai_key(monkeypatch):
-    monkeypatch.setenv("AZURE_OPENAI_KEY", "test-key")
-    monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
-    monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
-    monkeypatch.setenv("AZURE_OPENAI_VERSION", "2023-10-01-preview")
+async def test_azure_openai_key(monkeypatch, mock_keyvault_secretclient):
+    with mock.patch.dict(os.environ, clear=True):
+        monkeypatch.setenv("AZURE_OPENAI_KEY", "test-key")
+        monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
+        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
+        monkeypatch.setenv("AZURE_OPENAI_VERSION", "2023-10-01-preview")
 
-    quart_app = quartapp.create_app()
+        quart_app = quartapp.create_app()
 
-    async with quart_app.test_app():
-        assert quart_app.blueprints["chat"].openai_client.api_key == "test-key"
-        assert quart_app.blueprints["chat"].openai_client._azure_ad_token_provider is None
+        async with quart_app.test_app():
+            assert quart_app.blueprints["chat"].openai_client.api_key == "test-key"
+            assert quart_app.blueprints["chat"].openai_client._azure_ad_token_provider is None
 
 
 @pytest.mark.asyncio
-async def test_openai_managedidentity(monkeypatch):
-    monkeypatch.setenv("AZURE_OPENAI_CLIENT_ID", "test-client-id")
-    monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
-    monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
-    monkeypatch.setenv("AZURE_OPENAI_VERSION", "2023-10-01-preview")
+async def test_azure_openai_managedidentity(monkeypatch):
+    with mock.patch.dict(os.environ, clear=True):
+        monkeypatch.setenv("AZURE_OPENAI_CLIENT_ID", "test-client-id")
+        monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
+        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
+        monkeypatch.setenv("AZURE_OPENAI_VERSION", "2023-10-01-preview")
 
-    monkeypatch.setattr("azure.identity.aio.ManagedIdentityCredential", mock_cred.MockAzureCredential)
+        monkeypatch.setattr("azure.identity.aio.ManagedIdentityCredential", mock_cred.MockAzureCredential)
 
-    quart_app = quartapp.create_app()
+        quart_app = quartapp.create_app()
 
-    async with quart_app.test_app():
-        assert quart_app.blueprints["chat"].openai_client._azure_ad_token_provider is not None
+        async with quart_app.test_app():
+            assert quart_app.blueprints["chat"].openai_client._azure_ad_token_provider is not None
+
+
+@pytest.mark.asyncio
+async def test_openaicom_key(monkeypatch, mock_keyvault_secretclient):
+    with mock.patch.dict(os.environ, clear=True):
+        monkeypatch.setenv("OPENAICOM_API_KEY_SECRET_NAME", "my_secret_name")
+
+        quart_app = quartapp.create_app()
+
+        async with quart_app.test_app():
+            assert quart_app.blueprints["chat"].openai_client.api_key == "mysecret"
+            assert isinstance(quart_app.blueprints["chat"].openai_client, openai.AsyncOpenAI)
 
 
 @pytest.mark.asyncio
 async def test_openai_local(monkeypatch):
-    monkeypatch.setenv("LOCAL_OPENAI_ENDPOINT", "http://localhost:8080")
+    with mock.patch.dict(os.environ, clear=True):
+        monkeypatch.setenv("LOCAL_OPENAI_ENDPOINT", "http://localhost:8080")
 
-    quart_app = quartapp.create_app()
+        quart_app = quartapp.create_app()
 
-    async with quart_app.test_app():
-        assert quart_app.blueprints["chat"].openai_client.api_key == "no-key-required"
-        assert quart_app.blueprints["chat"].openai_client.base_url == "http://localhost:8080"
+        async with quart_app.test_app():
+            assert quart_app.blueprints["chat"].openai_client.api_key == "no-key-required"
+            assert quart_app.blueprints["chat"].openai_client.base_url == "http://localhost:8080"
+            assert isinstance(quart_app.blueprints["chat"].openai_client, openai.AsyncOpenAI)
