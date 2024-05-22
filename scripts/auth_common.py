@@ -20,6 +20,7 @@ from msgraph_beta.generated.oauth2_permission_grants.oauth2_permission_grants_re
     Oauth2PermissionGrantsRequestBuilder,
 )
 
+
 async def get_application(graph_client: GraphServiceClient, client_id: str) -> str | None:
     try:
         app = await graph_client.applications_with_app_id(client_id).get()
