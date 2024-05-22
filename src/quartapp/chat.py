@@ -33,23 +33,7 @@ async def configure_openai():
         bp.openai_client = openai.AsyncOpenAI(
             **client_args,
         )
-    elif os.getenv("OPENAICOM_API_KEY_SECRET_NAME") or os.getenv("OPENAICOM_API_KEY"):
-        current_app.logger.info("Using OpenAI.com OpenAI with key")
-        if os.getenv("OPENAICOM_API_KEY"):
-            client_args["api_key"] = os.getenv("OPENAICOM_API_KEY")
-        else:
-            OPENAICOM_API_KEY_SECRET_NAME = os.getenv("OPENAICOM_API_KEY_SECRET_NAME")
-            AZURE_KEY_VAULT_NAME = os.getenv("AZURE_KEY_VAULT_NAME")
-            async with SecretClient(
-                vault_url=f"https://{AZURE_KEY_VAULT_NAME}.vault.azure.net", credential=get_azure_credential()
-            ) as key_vault_client:
-                openai_api_key = (await key_vault_client.get_secret(OPENAICOM_API_KEY_SECRET_NAME)).value
-            client_args["api_key"] = openai_api_key
-        bp.openai_client = openai.AsyncOpenAI(
-            **client_args,
-        )
-        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
-    else:
+    elif os.getenv("AZURE_OPENAI_ENDPOINT"):
         # Use an Azure OpenAI endpoint instead,
         # either with a key or with keyless authentication
         if os.getenv("AZURE_OPENAI_KEY"):
@@ -75,6 +59,22 @@ async def configure_openai():
         )
         # Note: Azure OpenAI takes the deployment name as the model name
         bp.openai_model_arg = os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT")
+    elif os.getenv("OPENAICOM_API_KEY_SECRET_NAME") or os.getenv("OPENAICOM_API_KEY"):
+        current_app.logger.info("Using OpenAI.com OpenAI with key")
+        if os.getenv("OPENAICOM_API_KEY"):
+            client_args["api_key"] = os.getenv("OPENAICOM_API_KEY")
+        else:
+            OPENAICOM_API_KEY_SECRET_NAME = os.getenv("OPENAICOM_API_KEY_SECRET_NAME")
+            AZURE_KEY_VAULT_NAME = os.getenv("AZURE_KEY_VAULT_NAME")
+            async with SecretClient(
+                vault_url=f"https://{AZURE_KEY_VAULT_NAME}.vault.azure.net", credential=get_azure_credential()
+            ) as key_vault_client:
+                openai_api_key = (await key_vault_client.get_secret(OPENAICOM_API_KEY_SECRET_NAME)).value
+            client_args["api_key"] = openai_api_key
+        bp.openai_client = openai.AsyncOpenAI(
+            **client_args,
+        )
+        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
 
 
 @bp.after_app_serving
