@@ -1,3 +1,4 @@
 azure-identity
 aiohttp
 msgraph-sdk
+msgraph-beta-sdk

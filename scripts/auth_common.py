@@ -16,7 +16,9 @@ from msgraph.generated.models.service_principal import ServicePrincipal
 from msgraph.generated.models.o_auth2_permission_grant import OAuth2PermissionGrant
 from msgraph.generated.service_principals.service_principals_request_builder import ServicePrincipalsRequestBuilder
 from msgraph.generated.models.reference_create import ReferenceCreate
-
+from msgraph_beta.generated.oauth2_permission_grants.oauth2_permission_grants_request_builder import (
+    Oauth2PermissionGrantsRequestBuilder,
+)
 
 async def get_application(graph_client: GraphServiceClient, client_id: str) -> str | None:
     try:

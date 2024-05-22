@@ -227,7 +227,7 @@ async def main():
         credential = get_credential(tenant_id)
         scopes = ["https://graph.microsoft.com/.default"]
         graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
-    except Exception as e:
+    except Exception:
         sys.exit(1)
     try:
         (tenant_type, _) = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
@@ -268,7 +268,7 @@ async def main():
 
             print(f"Adding user flow to application {app_id}")
             await add_app_to_userflow(auth_headers, userflow_id, app_id)
-    except Exception as e:
+    except Exception:
         sys.exit(1)
     finally:
         await credential.close()
