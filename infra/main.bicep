@@ -39,7 +39,7 @@ param openAiComAPIKeySecretName string = 'openai-com-api-key'
 
 param authClientId string
 @secure()
-param authClientSecret string
+param authClientSecret string = ''
 param authClientSecretName string = 'AZURE-AUTH-CLIENT-SECRET'
 param authTenantId string
 param loginEndpoint string

@@ -9,3 +9,5 @@ if (Test-Path -Path "/usr") {
 }
 
 Start-Process -FilePath $venvPythonPath -ArgumentList "./scripts/auth_init.py" -Wait -NoNewWindow
+
+. ./scripts/unload_azd_env.ps1

@@ -92,6 +92,7 @@ def extract_username(headers, default_username="You"):
 
     token = json.loads(base64.b64decode(headers.get("X-MS-CLIENT-PRINCIPAL")))
     claims = {claim["typ"]: claim["val"] for claim in token["claims"]}
+    current_app.logger.info(f"Claims: {claims}")
     return claims.get("name", default_username)
 
 

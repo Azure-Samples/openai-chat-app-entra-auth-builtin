@@ -6,7 +6,7 @@ from quart import Quart
 
 def create_app():
     if os.getenv("RUNNING_IN_PRODUCTION"):
-        logging.basicConfig(level=logging.WARNING)
+        logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.INFO)
 
