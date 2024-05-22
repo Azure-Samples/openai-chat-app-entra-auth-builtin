@@ -25,7 +25,6 @@ from msgraph.generated.models.application import Application
 from msgraph.generated.models.implicit_grant_settings import ImplicitGrantSettings
 from msgraph.generated.models.required_resource_access import RequiredResourceAccess
 from msgraph.generated.models.resource_access import ResourceAccess
-from msgraph.generated.models.spa_application import SpaApplication
 from msgraph.generated.models.web_application import WebApplication
 
 
@@ -43,7 +42,6 @@ def client_app(identifier: int) -> Application:
             redirect_uris=["http://localhost:50505/.auth/login/aad/callback"],
             implicit_grant_settings=ImplicitGrantSettings(enable_id_token_issuance=True),
         ),
-        spa=SpaApplication(redirect_uris=["http://localhost:50505/redirect"]),
         required_resource_access=[
             RequiredResourceAccess(
                 resource_app_id="00000003-0000-0000-c000-000000000000",
