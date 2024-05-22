@@ -6,7 +6,6 @@ from azure.identity.aio import AzureDeveloperCliCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.models.application import Application
 from msgraph.generated.models.public_client_application import PublicClientApplication
-from msgraph.generated.models.spa_application import SpaApplication
 from msgraph.generated.models.web_application import WebApplication
 
 
@@ -29,12 +28,6 @@ async def main():
             # Redirect URIs need to be relative to the deployed application
             app = Application(
                 public_client=PublicClientApplication(redirect_uris=[]),
-                spa=SpaApplication(
-                    redirect_uris=[
-                        "http://localhost:50505/redirect",
-                        f"{uri}/redirect",
-                    ]
-                ),
                 web=WebApplication(
                     redirect_uris=[
                         "http://localhost:50505/.auth/login/aad/callback",
