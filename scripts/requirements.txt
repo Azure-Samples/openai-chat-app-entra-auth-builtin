@@ -128,13 +128,15 @@ portalocker==2.8.2
 pycparser==2.22
     # via cffi
 pyjwt[crypto]==2.8.0
-    # via msal
+    # via
+    #   msal
+    #   pyjwt
 python-dateutil==2.9.0.post0
     # via
     #   microsoft-kiota-serialization-text
     #   pendulum
     #   time-machine
-requests==2.31.0
+requests==2.32.2
     # via
     #   azure-core
     #   msal
