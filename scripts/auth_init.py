@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import os
 import random
+import sys
 
 import aiohttp
 from auth_common import (
@@ -222,9 +223,12 @@ def get_credential(tenantId: str) -> AsyncTokenCredential:
 async def main():
     tenant_id = os.getenv("AZURE_AUTH_TENANT_ID", None)
     print("Setting up authentication for tenant %s" % tenant_id)
-    credential = get_credential(tenant_id)
-    scopes = ["https://graph.microsoft.com/.default"]
-    graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
+    try:
+        credential = get_credential(tenant_id)
+        scopes = ["https://graph.microsoft.com/.default"]
+        graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
+    except Exception:
+        sys.exit(1)
     try:
         (tenant_type, _) = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
         print(f"Detected a tenant of type: {tenant_type}")
@@ -264,6 +268,8 @@ async def main():
 
             print(f"Adding user flow to application {app_id}")
             await add_app_to_userflow(auth_headers, userflow_id, app_id)
+    except Exception:
+        sys.exit(1)
     finally:
         await credential.close()
     print("Pre-provisioning script complete.")
