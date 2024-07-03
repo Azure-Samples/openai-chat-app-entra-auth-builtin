@@ -33,23 +33,7 @@ async def configure_openai():
         bp.openai_client = openai.AsyncOpenAI(
             **client_args,
         )
-    elif os.getenv("OPENAICOM_API_KEY_SECRET_NAME") or os.getenv("OPENAICOM_API_KEY"):
-        current_app.logger.info("Using OpenAI.com OpenAI with key")
-        if os.getenv("OPENAICOM_API_KEY"):
-            client_args["api_key"] = os.getenv("OPENAICOM_API_KEY")
-        else:
-            OPENAICOM_API_KEY_SECRET_NAME = os.getenv("OPENAICOM_API_KEY_SECRET_NAME")
-            AZURE_KEY_VAULT_NAME = os.getenv("AZURE_KEY_VAULT_NAME")
-            async with SecretClient(
-                vault_url=f"https://{AZURE_KEY_VAULT_NAME}.vault.azure.net", credential=get_azure_credential()
-            ) as key_vault_client:
-                openai_api_key = (await key_vault_client.get_secret(OPENAICOM_API_KEY_SECRET_NAME)).value
-            client_args["api_key"] = openai_api_key
-        bp.openai_client = openai.AsyncOpenAI(
-            **client_args,
-        )
-        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
-    else:
+    elif os.getenv("AZURE_OPENAI_ENDPOINT"):
         # Use an Azure OpenAI endpoint instead,
         # either with a key or with keyless authentication
         if os.getenv("AZURE_OPENAI_KEY"):
@@ -68,6 +52,10 @@ async def configure_openai():
             client_args["azure_ad_token_provider"] = azure.identity.aio.get_bearer_token_provider(
                 default_credential, "https://cognitiveservices.azure.com/.default"
             )
+        if not os.getenv("AZURE_OPENAI_ENDPOINT"):
+            raise ValueError("AZURE_OPENAI_ENDPOINT is required for Azure OpenAI")
+        if not os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT"):
+            raise ValueError("AZURE_OPENAI_CHATGPT_DEPLOYMENT is required for Azure OpenAI")
         bp.openai_client = openai.AsyncAzureOpenAI(
             api_version=os.getenv("AZURE_OPENAI_API_VERSION") or "2024-02-15-preview",
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -75,6 +63,22 @@ async def configure_openai():
         )
         # Note: Azure OpenAI takes the deployment name as the model name
         bp.openai_model_arg = os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT")
+    elif os.getenv("OPENAICOM_API_KEY_SECRET_NAME") or os.getenv("OPENAICOM_API_KEY"):
+        current_app.logger.info("Using OpenAI.com OpenAI with key")
+        if os.getenv("OPENAICOM_API_KEY"):
+            client_args["api_key"] = os.getenv("OPENAICOM_API_KEY")
+        else:
+            OPENAICOM_API_KEY_SECRET_NAME = os.getenv("OPENAICOM_API_KEY_SECRET_NAME")
+            AZURE_KEY_VAULT_NAME = os.getenv("AZURE_KEY_VAULT_NAME")
+            async with SecretClient(
+                vault_url=f"https://{AZURE_KEY_VAULT_NAME}.vault.azure.net", credential=get_azure_credential()
+            ) as key_vault_client:
+                openai_api_key = (await key_vault_client.get_secret(OPENAICOM_API_KEY_SECRET_NAME)).value
+            client_args["api_key"] = openai_api_key
+        bp.openai_client = openai.AsyncOpenAI(
+            **client_args,
+        )
+        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
 
 
 @bp.after_app_serving
@@ -92,7 +96,6 @@ def extract_username(headers, default_username="You"):
 
     token = json.loads(base64.b64decode(headers.get("X-MS-CLIENT-PRINCIPAL")))
     claims = {claim["typ"]: claim["val"] for claim in token["claims"]}
-    current_app.logger.info(f"Claims: {claims}")
     return claims.get("name", default_username)
 
 
@@ -102,7 +105,7 @@ async def index():
     return await render_template("index.html", username=username)
 
 
-@bp.post("/chat")
+@bp.post("/chat/stream")
 async def chat_handler():
     request_messages = (await request.get_json())["messages"]
 
@@ -121,7 +124,9 @@ async def chat_handler():
         )
         try:
             async for event in await chat_coroutine:
-                yield json.dumps(event.model_dump(), ensure_ascii=False) + "\n"
+                event_dict = event.model_dump()
+                if event_dict["choices"]:
+                    yield json.dumps(event_dict["choices"][0], ensure_ascii=False) + "\n"
         except Exception as e:
             current_app.logger.error(e)
             yield json.dumps({"error": str(e)}, ensure_ascii=False) + "\n"

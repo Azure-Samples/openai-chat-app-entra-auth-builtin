@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import random
+import sys
 
 from auth_common import (
     add_application_owner,
@@ -55,7 +56,6 @@ from msgraph.generated.models.application import Application
 from msgraph.generated.models.implicit_grant_settings import ImplicitGrantSettings
 from msgraph.generated.models.required_resource_access import RequiredResourceAccess
 from msgraph.generated.models.resource_access import ResourceAccess
-from msgraph.generated.models.spa_application import SpaApplication
 from msgraph.generated.models.web_application import WebApplication
 from kiota_abstractions.base_request_configuration import RequestConfiguration
 from rich.logging import RichHandler
@@ -121,7 +121,6 @@ def client_app(identifier: int) -> Application:
             redirect_uris=["http://localhost:50505/.auth/login/aad/callback"],
             implicit_grant_settings=ImplicitGrantSettings(enable_id_token_issuance=True),
         ),
-        spa=SpaApplication(redirect_uris=["http://localhost:50505/redirect"]),
         required_resource_access=[
             RequiredResourceAccess(
                 resource_app_id="00000003-0000-0000-c000-000000000000",
@@ -288,10 +287,13 @@ def get_credential(tenant_id: str) -> AsyncTokenCredential:
 async def main():
     tenant_id = os.getenv("AZURE_AUTH_TENANT_ID", None)
     logger.info("Setting up authentication for tenant %s" % tenant_id)
-    credential = get_credential(tenant_id)
-    scopes = ["https://graph.microsoft.com/.default"]
-    graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
-    graph_client_beta = GraphServiceClientBeta(credentials=credential, scopes=scopes)
+    try:
+        credential = get_credential(tenant_id)
+        scopes = ["https://graph.microsoft.com/.default"]
+        graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
+        graph_client_beta = GraphServiceClientBeta(credentials=credential, scopes=scopes)
+    except Exception:
+        sys.exit(1)
     try:
         (tenant_type, _) = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
         logger.info(f"Detected a tenant of type: {tenant_type}")
@@ -318,7 +320,8 @@ async def main():
 
             userflow_id = await get_or_create_userflow(graph_client_beta, app_id, client_userflow(app_identifier))
             await get_or_create_userflow_app(graph_client_beta, userflow_id, app_id)
-
+    except Exception:
+        sys.exit(1)
     finally:
         await credential.close()
     logger.info("Pre-provisioning script complete.")

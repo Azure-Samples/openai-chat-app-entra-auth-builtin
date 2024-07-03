@@ -21,7 +21,16 @@ param deployAzureOpenAi bool = true
 
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
-param openAiResourceGroupLocation string = ''
+
+// https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#standard-deployment-model-availability
+@description('Location for the OpenAI resource')
+@allowed([ 'canadaeast', 'northcentralus', 'southcentralus' ])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
+param openAiResourceLocation string
 param openAiDeploymentName string = 'chatgpt'
 param openAiSkuName string = ''
 param openAiDeploymentCapacity int = 30
@@ -37,12 +46,12 @@ var openAiConfig = {
 param openAiComAPIKey string = ''
 param openAiComAPIKeySecretName string = 'openai-com-api-key'
 
-param authClientId string
+param authClientId string = ''
 @secure()
 param authClientSecret string = ''
 param authClientSecretName string = 'AZURE-AUTH-CLIENT-SECRET'
 param authTenantId string
-param loginEndpoint string
+param loginEndpoint string = ''
 param tenantId string = tenant().tenantId
 var tenantIdForAuth = !empty(authTenantId) ? authTenantId : tenantId
 
@@ -66,7 +75,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
   scope: openAiResourceGroup
   params: {
     name: !empty(openAiResourceName) ? openAiResourceName : '${resourceToken}-cog'
-    location: !empty(openAiResourceGroupLocation) ? openAiResourceGroupLocation : location
+    location: !empty(openAiResourceLocation) ? openAiResourceLocation : location
     tags: tags
     sku: {
       name: !empty(openAiSkuName) ? openAiSkuName : 'S0'
