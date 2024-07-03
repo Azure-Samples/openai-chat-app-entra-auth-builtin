@@ -86,7 +86,7 @@ async def main():
     scopes = ["https://graph.microsoft.com/.default"]
     graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
 
-    (tenant_type, default_domain) = await get_tenant_details(credential, tenant_id)
+    (tenant_type, default_domain) = await get_tenant_details(tenant_id)
     if tenant_type != "CIAM":
         print("You don't need to run this script for non-ExternalId tenant...")
         exit(0)
@@ -112,7 +112,6 @@ async def main():
         print(f"Granting app role {app_role}...")
         await grant_approle(graph_client, sp_id, graph_sp_id, app_role)
 
-    print(f"Adding application owner for {app_id}")
     owner_id = await get_current_user(graph_client)
     await add_application_owner(graph_client, obj_id, owner_id)
     update_azd_env("AZURE_AUTH_EXTID_APP_OWNER", owner_id)

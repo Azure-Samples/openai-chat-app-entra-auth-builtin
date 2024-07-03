@@ -49,7 +49,7 @@ If you're not using one of those options for opening the project, then you'll ne
 
 ## Deploying
 
-Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
+Once you've opened the project in Codespaces, in Dev Containers, or locally, you can deploy it to Azure.
 
 ### Azure account setup
 
@@ -86,7 +86,7 @@ To configure, follow these steps:
     azd auth login --tenant-id AUTH-TENANT-ID
     ```
 
-1. Then proceed with the [deployment steps](#deployment) below.
+1. Then proceed with the [deployment steps](#deploying-with-azd) below.
 
 ### Microsoft Entra External ID setup
 
@@ -132,7 +132,7 @@ To configure, follow these steps:
     ./scripts/setup_for_external_id.sh
     ```
 
-1. Now proceed with the [deployment steps](#deployment) below.
+1. Now proceed with the [deployment steps](#deploying-with-azd) below.
 
 ### Deploying with azd
 
