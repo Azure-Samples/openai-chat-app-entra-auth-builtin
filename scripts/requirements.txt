@@ -156,6 +156,8 @@ python-dateutil==2.9.0.post0
     #   microsoft-kiota-serialization-text
     #   pendulum
     #   time-machine
+python-dotenv==1.0.1
+    # via -r requirements.in
 requests==2.31.0
     # via
     #   azure-core

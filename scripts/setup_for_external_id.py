@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 
 from auth_common import (
@@ -8,6 +9,7 @@ from auth_common import (
     get_microsoft_graph_service_principal,
     get_tenant_details,
     update_azd_env,
+    load_azd_env,
 )
 from azure.identity.aio import AzureDeveloperCliCredential
 from msgraph import GraphServiceClient
@@ -16,6 +18,13 @@ from msgraph.generated.models.required_resource_access import RequiredResourceAc
 from msgraph.generated.models.resource_access import ResourceAccess
 from msgraph.generated.models.o_data_errors.o_data_error import ODataError
 from msgraph.generated.models.app_role_assignment import AppRoleAssignment
+from rich.logging import RichHandler
+
+logging.basicConfig(
+    level=logging.WARNING, format="%(message)s", datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+)
+logger = logging.getLogger("authsetup")
+logger.setLevel(logging.INFO)
 
 
 def client_app():
@@ -67,10 +76,10 @@ async def grant_approle(graph_client: GraphServiceClient, sp_obj_id: str, resour
             raise e
 
 
-#
-# for an external ID tenant, the login domain is a subdomain of ciamlogin.com, not onmicrosoft.com
-#
 def login_domain_for(default_domain: str) -> str:
+    """Return the login domain for the given default domain.
+    For an External ID tenant, the login domain is a subdomain of ciamlogin.com, not onmicrosoft.com
+    """
     prefix = default_domain.split(".")[0]
     return f"{prefix}.ciamlogin.com"
 
@@ -78,27 +87,25 @@ def login_domain_for(default_domain: str) -> str:
 async def main():
     tenant_id = os.getenv("AZURE_AUTH_TENANT_ID", None)
     if not tenant_id:
-        print("Please set AZURE_AUTH_TENANT_ID environment variable")
+        logger.info("Please set AZURE_AUTH_TENANT_ID environment variable")
         exit(1)
 
-    print(f"Setting up External ID Service Principal in tenant {tenant_id}")
+    logger.info(f"Setting up External ID Service Principal in tenant {tenant_id}")
     credential = AzureDeveloperCliCredential(tenant_id=tenant_id)
-    scopes = ["https://graph.microsoft.com/.default"]
-    graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
+    graph_client = GraphServiceClient(credentials=credential)
 
     (tenant_type, default_domain) = await get_tenant_details(credential, tenant_id)
     if tenant_type != "CIAM":
-        print("You don't need to run this script for non-ExternalId tenant...")
+        logger.info("You don't need to run this script for non-ExternalId tenant...")
         exit(0)
     # Convert default domain to login domain
     login_domain = login_domain_for(default_domain)
-    print(f"Using login domain {login_domain} for tenant {tenant_id}")
+    logger.info(f"Using login domain {login_domain} for tenant {tenant_id}")
 
     # Update azd env
     update_azd_env("AZURE_AUTH_TENANT_ID", tenant_id)
     update_azd_env("AZURE_AUTH_LOGIN_ENDPOINT", login_domain)
 
-    print("Checking if we need to create application registration...")
     (obj_id, app_id, sp_id) = await create_or_update_application_with_secret(
         graph_client,
         app_id_env_var="AZURE_AUTH_EXTID_APP_ID",
@@ -106,17 +113,18 @@ async def main():
         request_app=client_app(),
     )
 
-    print("Granting Application consent...")
+    logger.info("Granting Application consent...")
     graph_sp_id = await get_microsoft_graph_service_principal(graph_client)
     for app_role in app_roles():
-        print(f"Granting app role {app_role}...")
+        logger.info(f"Granting app role {app_role}")
         await grant_approle(graph_client, sp_id, graph_sp_id, app_role)
 
     owner_id = await get_current_user(graph_client)
     await add_application_owner(graph_client, obj_id, owner_id)
     update_azd_env("AZURE_AUTH_EXTID_APP_OWNER", owner_id)
-    print("External ID setup is complete! Now follow the steps for deployment.")
+    logger.info("External ID setup is complete! Now follow the steps for deployment.")
 
 
 if __name__ == "__main__":
+    load_azd_env()
     asyncio.run(main())

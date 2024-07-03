@@ -11,6 +11,7 @@ from auth_common import (
     get_microsoft_graph_service_principal,
     get_tenant_details,
     update_azd_env,
+    load_azd_env,
 )
 
 from azure.core.credentials_async import AsyncTokenCredential
@@ -60,7 +61,7 @@ from kiota_abstractions.base_request_configuration import RequestConfiguration
 from rich.logging import RichHandler
 
 logging.basicConfig(
-    level=logging.WARNING, format="%(message)s", datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+    level=logging.WARNING, format="%(message)s", handlers=[RichHandler(rich_tracebacks=True, log_time_format="")]
 )
 logger = logging.getLogger("authsetup")
 logger.setLevel(logging.INFO)
@@ -100,6 +101,9 @@ async def create_permission_grant(graph_client: GraphServiceClient, obj_id: str,
 
 
 async def get_or_create_permission_grant(graph_client: GraphServiceClient, sp_id: str, graph_sp_id: str):
+    logger.info(
+        f"Possibly creating permission grant to authorize client SP {sp_id} to access Graph SP {graph_sp_id}..."
+    )
     permission_scopes = " ".join(["User.Read", "offline_access", "openid", "profile"])
     grant_id = await get_permission_grant(graph_client, sp_id, graph_sp_id, permission_scopes)
     if grant_id:
@@ -205,13 +209,11 @@ def client_userflow(identifier: int):
     )
 
 
-async def get_userflow(graph_client_beta: GraphServiceClientBeta, app_identifier: str) -> (str | None):
+async def get_userflow(graph_client_beta: GraphServiceClientBeta, app_id: str) -> (str | None):
     """https://learn.microsoft.com/graph/api/resources/externalusersselfservicesignupeventsflow"""
 
-    app_name = f"ChatGPT Sample User Flow {app_identifier}"
-
     query_params = AuthenticationEventsFlowsRequestBuilder.AuthenticationEventsFlowsRequestBuilderGetQueryParameters(
-        filter=f"displayName eq '{app_name}'",
+        filter=f"conditions/applications/includeApplications/any(a:a/appId eq '{app_id}')"
     )
     request_configuration = RequestConfiguration(
         query_parameters=query_params,
@@ -232,14 +234,16 @@ async def create_userflow(
     return result.id
 
 
-async def get_or_create_userflow(graph_client_beta: GraphServiceClientBeta, app_identifier: int) -> str:
-    logger.info("Checking if userflow exists...")
-    userflow_id = await get_userflow(graph_client_beta, app_identifier)
+async def get_or_create_userflow(
+    graph_client_beta: GraphServiceClientBeta, app_id: str, client_userflow: ExternalUsersSelfServiceSignUpEventsFlow
+) -> str:
+    logger.info(f"Possibly creating user flow for {app_id}...")
+    userflow_id = await get_userflow(graph_client_beta, app_id)
     if userflow_id:
-        logger.info(f"User flow already exists for {app_identifier}")
+        logger.info("Found an existing user flow associated with client app.")
     else:
-        logger.info(f"Creating user flow for {app_identifier}")
-        userflow_id = await create_userflow(graph_client_beta, client_userflow(app_identifier))
+        logger.info("Creating new user flow.")
+        userflow_id = await create_userflow(graph_client_beta, client_userflow)
     return userflow_id
 
 
@@ -262,12 +266,12 @@ async def add_app_to_userflow(graph_client_beta: GraphServiceClientBeta, userflo
 
 
 async def get_or_create_userflow_app(graph_client_beta: GraphServiceClientBeta, userflow_id: str, app_id: str) -> bool:
-    logger.info(f"Checking if userflow {userflow_id} has application {app_id}...")
+    logger.info(f"Possibly setting up association between userflow {userflow_id} and client app {app_id}...")
     flow_app_exists = await userflow_has_app(graph_client_beta, userflow_id, app_id)
     if flow_app_exists:
-        logger.info("User flow already has the application")
+        logger.info("User flow is already associated with client app.")
     else:
-        logger.info(f"Adding user flow to application {app_id}")
+        logger.info("Adding user flow to client app.")
         await add_app_to_userflow(graph_client_beta, userflow_id, app_id)
 
 
@@ -312,7 +316,7 @@ async def main():
             if current_user is not None:
                 await add_application_owner(graph_client, app_obj_id, current_user)
 
-            userflow_id = await get_or_create_userflow(graph_client_beta, app_identifier)
+            userflow_id = await get_or_create_userflow(graph_client_beta, app_id, client_userflow(app_identifier))
             await get_or_create_userflow_app(graph_client_beta, userflow_id, app_id)
 
     finally:
@@ -321,4 +325,5 @@ async def main():
 
 
 if __name__ == "__main__":
+    load_azd_env()
     asyncio.run(main())

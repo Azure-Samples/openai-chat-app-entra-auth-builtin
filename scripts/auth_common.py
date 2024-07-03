@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 import logging
 import time
 
@@ -16,6 +17,8 @@ from msgraph.generated.models.password_credential import PasswordCredential
 from msgraph.generated.models.service_principal import ServicePrincipal
 from msgraph.generated.service_principals.service_principals_request_builder import ServicePrincipalsRequestBuilder
 from msgraph.generated.models.reference_create import ReferenceCreate
+
+from dotenv import load_dotenv
 
 logger = logging.getLogger("authsetup")
 
@@ -136,10 +139,10 @@ async def create_or_update_application_with_secret(
         object_id = await get_application(graph_client, app_id)
 
     if object_id:
-        logger.info("Application already exists, not creating new one")
+        logger.info("Application already exists, not creating new one.")
         await graph_client.applications.by_application_id(object_id).patch(request_app)
     else:
-        logger.info("Creating application registration")
+        logger.info("Creating application registration.")
         object_id, app_id = await create_application(graph_client, request_app)
         update_azd_env(app_id_env_var, app_id)
         created_app = True
@@ -169,3 +172,19 @@ def update_azd_env(name, val):
     # val could start with '-' which would cause azd to think it's a flag
     # so use '--' to signal end of parameter parsing
     subprocess.run(f"azd env set {name} -- {val}", shell=True)
+
+
+def load_azd_env():
+    """Get path to current azd env file and load file using python-dotenv"""
+    result = subprocess.run("azd env list -o json", shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise Exception("Error loading azd env")
+    env_json = json.loads(result.stdout)
+    env_file_path = None
+    for entry in env_json:
+        if entry["IsDefault"]:
+            env_file_path = entry["DotEnvPath"]
+    if not env_file_path:
+        raise Exception("No default azd env file found")
+    logger.info(f"Loading azd env from {env_file_path}")
+    load_dotenv(env_file_path, override=True)
