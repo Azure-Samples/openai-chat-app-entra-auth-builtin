@@ -86,7 +86,7 @@ async def main():
     scopes = ["https://graph.microsoft.com/.default"]
     graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
 
-    (tenant_type, default_domain) = await get_tenant_details(tenant_id)
+    (tenant_type, default_domain) = await get_tenant_details(credential, tenant_id)
     if tenant_type != "CIAM":
         print("You don't need to run this script for non-ExternalId tenant...")
         exit(0)
