@@ -208,7 +208,7 @@ def client_userflow(identifier: int):
     )
 
 
-async def get_userflow(graph_client_beta: GraphServiceClientBeta, app_id: str) -> (str | None):
+async def get_userflow(graph_client_beta: GraphServiceClientBeta, app_id: str) -> str | None:
     """https://learn.microsoft.com/graph/api/resources/externalusersselfservicesignupeventsflow"""
 
     query_params = AuthenticationEventsFlowsRequestBuilder.AuthenticationEventsFlowsRequestBuilderGetQueryParameters(
