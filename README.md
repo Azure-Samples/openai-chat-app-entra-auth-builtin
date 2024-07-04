@@ -144,6 +144,8 @@ Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [M
     azd auth login --tenant-id AZURE-TENANT-ID
     ```
 
+1. (Optional) This is the point where you can customize the deployment by setting environment variables, in order to use [existing Azure resources](/docs/deploy_existing.md).
+
 1. Provision and deploy all the resources:
 
     ```shell
@@ -171,7 +173,7 @@ azd pipeline config
 
 ## Development server
 
-Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deployment), you can now run the Quart app in your development environment:
+Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deploying), you can now run the Quart app in your development environment:
 
 ```shell
 python -m quart --app src.quartapp run --port 50505 --reload

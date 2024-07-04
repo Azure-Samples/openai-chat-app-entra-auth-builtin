@@ -239,9 +239,9 @@ async def get_or_create_userflow(
     logger.info(f"Possibly creating user flow for {app_id}...")
     userflow_id = await get_userflow(graph_client_beta, app_id)
     if userflow_id:
-        logger.info("Found an existing user flow associated with client app.")
+        logger.info("Found an existing user flow associated with client app")
     else:
-        logger.info("Creating new user flow.")
+        logger.info("Creating new user flow")
         userflow_id = await create_userflow(graph_client_beta, client_userflow)
     return userflow_id
 
@@ -255,13 +255,12 @@ async def userflow_has_app(graph_client_beta: GraphServiceClientBeta, userflow_i
     return app_id in app_ids
 
 
-async def add_app_to_userflow(graph_client_beta: GraphServiceClientBeta, userflow_id: str, app_id: str) -> bool:
+async def add_app_to_userflow(graph_client_beta: GraphServiceClientBeta, userflow_id: str, app_id: str):
     """https://learn.microsoft.com/graph/api/authenticationconditionsapplications-post-includeapplications"""
     request_body = AuthenticationConditionApplication(app_id=app_id)
-    result = await graph_client_beta.identity.authentication_events_flows.by_authentication_events_flow_id(
+    await graph_client_beta.identity.authentication_events_flows.by_authentication_events_flow_id(
         userflow_id
     ).conditions.applications.include_applications.post(request_body)
-    return result.id
 
 
 async def get_or_create_userflow_app(graph_client_beta: GraphServiceClientBeta, userflow_id: str, app_id: str) -> bool:
@@ -292,7 +291,8 @@ async def main():
         scopes = ["https://graph.microsoft.com/.default"]
         graph_client = GraphServiceClient(credentials=credential, scopes=scopes)
         graph_client_beta = GraphServiceClientBeta(credentials=credential, scopes=scopes)
-    except Exception:
+    except Exception as e:
+        logger.error("Error occurred: %s", e)
         sys.exit(1)
     try:
         (tenant_type, _) = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
@@ -320,7 +320,8 @@ async def main():
 
             userflow_id = await get_or_create_userflow(graph_client_beta, app_id, client_userflow(app_identifier))
             await get_or_create_userflow_app(graph_client_beta, userflow_id, app_id)
-    except Exception:
+    except Exception as e:
+        logger.error("Error occurred: %s", e)
         sys.exit(1)
     finally:
         await credential.close()

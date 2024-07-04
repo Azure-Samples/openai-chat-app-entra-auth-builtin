@@ -12,7 +12,7 @@ from rich.logging import RichHandler
 
 
 logging.basicConfig(
-    level=logging.WARNING, format="%(message)s", datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+    level=logging.WARNING, format="%(message)s", handlers=[RichHandler(rich_tracebacks=True, log_time_format="")]
 )
 logger = logging.getLogger("authsetup")
 logger.setLevel(logging.INFO)
