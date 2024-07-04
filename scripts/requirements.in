@@ -2,3 +2,5 @@ azure-identity
 aiohttp
 msgraph-sdk
 msgraph-beta-sdk
+rich
+python-dotenv

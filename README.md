@@ -49,7 +49,7 @@ If you're not using one of those options for opening the project, then you'll ne
 
 ## Deploying
 
-Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
+Once you've opened the project in Codespaces, in Dev Containers, or locally, you can deploy it to Azure.
 
 ### Azure account setup
 
@@ -86,7 +86,7 @@ To configure, follow these steps:
     azd auth login --tenant-id AUTH-TENANT-ID
     ```
 
-1. Then proceed with the [deployment steps](#deployment) below.
+1. Then proceed with the [deployment steps](#deploying-with-azd) below.
 
 ### Microsoft Entra External ID setup
 
@@ -132,7 +132,7 @@ To configure, follow these steps:
     ./scripts/setup_for_external_id.sh
     ```
 
-1. Now proceed with the [deployment steps](#deployment) below.
+1. Now proceed with the [deployment steps](#deploying-with-azd) below.
 
 ### Deploying with azd
 
@@ -143,6 +143,8 @@ Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [M
     ```shell
     azd auth login --tenant-id AZURE-TENANT-ID
     ```
+
+1. (Optional) This is the point where you can customize the deployment by setting environment variables, in order to use [existing Azure resources](/docs/deploy_existing.md).
 
 1. Provision and deploy all the resources:
 
@@ -171,7 +173,7 @@ azd pipeline config
 
 ## Development server
 
-Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deployment), you can now run the Quart app in your development environment:
+Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deploying), you can now run the Quart app in your development environment:
 
 ```shell
 python -m quart --app src.quartapp run --port 50505 --reload

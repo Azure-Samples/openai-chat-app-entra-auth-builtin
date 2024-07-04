@@ -26,11 +26,19 @@ azd env set AZURE_OPENAI_SKU_NAME {name of the SKU, defaults to "S0"}
 
 ## OpenAI.com OpenAI resource
 
-If you already have an OpenAI.com API key and would like to re-use it, run `azd env set` to specify the values for the existing OpenAI.com API key.
+If you already have an OpenAI.com API key and would like to re-use it:
 
-```shell
-azd env set OPENAICOM_API_KEY {your OpenAI.com API key}
-```
+1. Disable the creation of an Azure OpenAI resource:
+
+    ```shell
+    azd env set DEPLOY_AZURE_OPENAI false
+    ```
+
+1. Specify the value for the existing OpenAI.com API key:
+
+    ```shell
+    azd env set OPENAICOM_API_KEY {your OpenAI.com API key}
+    ```
 
 The key will be stored in Key Vault when you run `azd up`, and fetched from Key Vault inside the application code.
 You must run `azd up` to store the key in Key Vault before running the application.
