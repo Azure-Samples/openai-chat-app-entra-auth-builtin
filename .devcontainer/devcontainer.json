@@ -13,6 +13,7 @@
             "extensions": [
                 "ms-azuretools.azure-dev",
                 "ms-azuretools.vscode-bicep",
+                "ms-azuretools.ms-entra",
                 "ms-python.python",
                 "GitHub.vscode-github-actions"
             ]
