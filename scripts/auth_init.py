@@ -276,7 +276,7 @@ async def get_or_create_userflow_app(graph_client_beta: GraphServiceClientBeta, 
 def get_credential(tenant_id: str) -> AsyncTokenCredential:
     client_id = os.getenv("AZURE_AUTH_EXTID_APP_ID", None)
     if client_id is None:
-        logger.info("Using Azd CLI Credential for tenant_id {tenant_id}")
+        logger.info(f"Using Azd CLI Credential for tenant_id {tenant_id}")
         return AzureDeveloperCliCredential(tenant_id=tenant_id)
     client_secret = os.getenv("AZURE_AUTH_EXTID_APP_SECRET", None)
     logger.info(f"Using Client Secret Credential for client ID {client_id}")

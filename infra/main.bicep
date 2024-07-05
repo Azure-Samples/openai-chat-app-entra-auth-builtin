@@ -80,6 +80,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
     sku: {
       name: !empty(openAiSkuName) ? openAiSkuName : 'S0'
     }
+    disableLocalAuth: true
     deployments: [
       {
         name: openAiConfig.deploymentName
@@ -121,10 +122,6 @@ module containerApps 'core/host/container-apps.bicep' = {
   }
 }
 
-
-
-// Currently, we only need Key Vault for storing Search service key,
-// which is only used for free tier
 module keyVault 'core/security/keyvault.bicep' = {
   name: 'keyvault'
   scope: resourceGroup
@@ -211,7 +208,6 @@ output AZURE_OPENAI_API_VERSION string = deployAzureOpenAi ? openAiApiVersion : 
 output AZURE_OPENAI_ENDPOINT string = deployAzureOpenAi ? openAi.outputs.endpoint : ''
 output AZURE_OPENAI_RESOURCE string = deployAzureOpenAi ? openAi.outputs.name : ''
 output AZURE_OPENAI_RESOURCE_GROUP string = deployAzureOpenAi ? openAiResourceGroup.name : ''
-output AZURE_OPENAI_SKU_NAME string = deployAzureOpenAi ? openAi.outputs.skuName : ''
 output AZURE_OPENAI_RESOURCE_GROUP_LOCATION string = deployAzureOpenAi ? openAiResourceGroup.location : ''
 output OPENAICOM_API_KEY_SECRET_NAME string = openAiComAPIKeySecretName
 output OPENAI_MODEL_NAME string = openAiConfig.modelName
