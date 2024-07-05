@@ -47,6 +47,9 @@ from msgraph_beta.generated.models.authentication_attribute_collection_page_view
 from msgraph_beta.generated.models.authentication_attribute_collection_input_configuration import (
     AuthenticationAttributeCollectionInputConfiguration,
 )
+from msgraph_beta.generated.models.authentication_attribute_collection_input_type import (
+    AuthenticationAttributeCollectionInputType,
+)
 from msgraph_beta.generated.models.user_type import UserType
 from msgraph.generated.models.o_auth2_permission_grant import OAuth2PermissionGrant
 from msgraph_beta.generated.oauth2_permission_grants.oauth2_permission_grants_request_builder import (
@@ -172,17 +175,17 @@ def client_userflow(identifier: int):
                                 required=True,
                                 label="Email Address",
                                 write_to_directory=True,
-                                input_type="text",
+                                input_type=AuthenticationAttributeCollectionInputType("text"),
                                 hidden=True,
                                 editable=False,
-                                validation_reg_ex="^[a-zA-Z0-9.!#$%&amp;&#8217;'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$",  # noqa: E501
+                                validation_reg_ex="^[a-zA-Z0-9.!#$%&amp;&#8217;'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$",  # noqa: E501
                             ),
                             AuthenticationAttributeCollectionInputConfiguration(
                                 attribute="displayName",
                                 required=True,
                                 label="Display Name",
                                 write_to_directory=True,
-                                input_type="text",
+                                input_type=AuthenticationAttributeCollectionInputType("text"),
                                 hidden=False,
                                 editable=True,
                                 validation_reg_ex="^.*",
@@ -199,7 +202,6 @@ def client_userflow(identifier: int):
             identity_providers=[
                 BuiltInIdentityProvider(
                     display_name="Email One Time Passcode",
-                    state="null",
                     identity_provider_type="EmailOTP",
                     id="EmailOtpSignup-OAUTH",
                 )
