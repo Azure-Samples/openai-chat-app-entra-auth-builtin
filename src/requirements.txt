@@ -111,11 +111,11 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
-openai==1.35.10
+openai==1.35.13
     # via quartapp (pyproject.toml)
 packaging==24.1
     # via gunicorn
-portalocker==2.10.0
+portalocker==2.10.1
     # via msal-extensions
 priority==2.0.0
     # via hypercorn
