@@ -45,7 +45,7 @@ click==8.1.7
     #   flask
     #   quart
     #   uvicorn
-cryptography==42.0.8
+cryptography==43.0.0
     # via
     #   azure-identity
     #   msal
@@ -101,7 +101,7 @@ markupsafe==2.1.5
     #   jinja2
     #   quart
     #   werkzeug
-msal==1.29.0
+msal==1.30.0
     # via
     #   azure-identity
     #   msal-extensions
@@ -111,11 +111,11 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
-openai==1.35.10
+openai==1.36.1
     # via quartapp (pyproject.toml)
 packaging==24.1
     # via gunicorn
-portalocker==2.10.0
+portalocker==2.10.1
     # via msal-extensions
 priority==2.0.0
     # via hypercorn
@@ -162,7 +162,7 @@ typing-extensions==4.12.2
     #   pydantic-core
 urllib3==2.2.2
     # via requests
-uvicorn[standard]==0.30.1
+uvicorn[standard]==0.30.3
     # via quartapp (pyproject.toml)
 uvloop==0.19.0
     # via uvicorn
