@@ -11,6 +11,9 @@
       "principalId": {
         "value": "${AZURE_PRINCIPAL_ID}"
       },
+      "keyVaultName": {
+        "value": "${AZURE_KEY_VAULT_NAME}"
+      },
       "deployAzureOpenAi": {
         "value": "${DEPLOY_AZURE_OPENAI=true}"
       },
@@ -49,6 +52,9 @@
       },
       "loginEndpoint": {
         "value": "${AZURE_AUTH_LOGIN_ENDPOINT}"
+      },
+      "runningOnGh": {
+        "value": "${GITHUB_ACTIONS}"
       }
     }
   }
