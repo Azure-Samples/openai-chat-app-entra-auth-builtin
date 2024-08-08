@@ -79,6 +79,8 @@ async def configure_openai():
             **client_args,
         )
         bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
+    else:
+        raise ValueError("No OpenAI configuration provided. Check your environment variables.")
 
 
 @bp.after_app_serving
