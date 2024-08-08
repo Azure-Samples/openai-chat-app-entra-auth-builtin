@@ -78,7 +78,7 @@ async def configure_openai():
         bp.openai_client = openai.AsyncOpenAI(
             **client_args,
         )
-        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-3.5-turbo"
+        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-4o-mini"
 
 
 @bp.after_app_serving
