@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: simple-chatgpt-python
+name: openai-chat-app-with-userauth-builtin
 metadata:
-  template: simple-chatgpt-python@0.1.0-beta
+  template: openai-chat-app-with-userauth-builtin@0.2.0-beta
 services:
   aca:
     project: ./src
