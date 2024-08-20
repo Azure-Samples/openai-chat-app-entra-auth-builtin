@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,4 +20,8 @@ jobs:
       - name: Azure CLI script
         uses: azure/CLI@v2
         with:
-          inlineScript: az config set bicep.use_binary_from_path=false && az bicep build -f infra/main.bicep
+          inlineScript: az bicep lint --file infra/main.bicep --diagnostics-format sarif > bicep-results.sarif
+      - name: Upload results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bicep-results.sarif
