@@ -21,13 +21,12 @@ param authLoginEndpoint string
 // The issuer is different depending if we are in a workforce or external tenant
 var openIdIssuer = empty(authLoginEndpoint) ? '${environment().authentication.loginEndpoint}${authTenantId}/v2.0' : 'https://${authLoginEndpoint}/${authTenantId}/v2.0'
 
-resource acaIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: identityName
-  location: location
-}
-
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: azureKeyVaultName
+}
+
+resource acaIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: identityName
 }
 
 
@@ -105,7 +104,6 @@ module auth 'core/host/container-apps-auth.bicep' = {
   }
 }
 
-output SERVICE_ACA_IDENTITY_PRINCIPAL_ID string = acaIdentity.properties.principalId
-output SERVICE_ACA_NAME string = app.outputs.name
-output SERVICE_ACA_URI string = app.outputs.uri
-output SERVICE_ACA_IMAGE_NAME string = app.outputs.imageName
+output name string = app.outputs.name
+output uri string = app.outputs.uri
+output imageName string = app.outputs.imageName

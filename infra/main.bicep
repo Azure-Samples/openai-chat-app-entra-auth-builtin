@@ -19,6 +19,11 @@ param acaExists bool = false
 
 param deployAzureOpenAi bool = true
 
+@description('Running on GitHub Actions?')
+param runningOnGh bool = false
+
+param keyVaultName string = ''
+
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
 
@@ -126,11 +131,32 @@ module keyVault 'core/security/keyvault.bicep' = {
   name: 'keyvault'
   scope: resourceGroup
   params: {
-    name: '${replace(take(prefix, 17), '-', '')}-vault'
+    name: !empty(keyVaultName) ? keyVaultName : '${replace(take(prefix, 17), '-', '')}-vault'
     location: location
     principalId: principalId
   }
 }
+
+module userKeyVaultAccess 'core/security/role.bicep' = {
+  name: 'user-keyvault-access'
+  scope: resourceGroup
+  params: {
+    principalId: principalId
+    principalType: runningOnGh ? 'ServicePrincipal' : 'User'
+    roleDefinitionId: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
+  }
+}
+
+module backendKeyVaultAccess 'core/security/role.bicep' = {
+  name: 'backend-keyvault-access'
+  scope: resourceGroup
+  params: {
+    principalId: acaIdentity.outputs.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
+  }
+}
+
 
 module openAiComAPIKeyStorage 'core/security/keyvault-secret.bicep' = if (!empty(openAiComAPIKey)) {
   name: 'openai-key-secret'
@@ -153,6 +179,14 @@ module authClientSecretStorage 'core/security/keyvault-secret.bicep' = if (!empt
     }
   }
 
+module acaIdentity 'core/security/identity.bicep' = {
+    name: 'aca-identity'
+    scope: resourceGroup
+    params: {
+      name: '${prefix}-id-aca'
+    }
+}
+
 // Container app frontend
 module aca 'aca.bicep' = {
   name: 'aca'
@@ -161,7 +195,7 @@ module aca 'aca.bicep' = {
     name: replace('${take(prefix,19)}-ca', '--', '-')
     location: location
     tags: tags
-    identityName: '${prefix}-id-aca'
+    identityName: acaIdentity.outputs.name
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
     openAiDeploymentName: deployAzureOpenAi ? openAiDeploymentName : ''
@@ -175,7 +209,7 @@ module aca 'aca.bicep' = {
     authLoginEndpoint: loginEndpoint
     azureKeyVaultName: keyVault.outputs.name
   }
-  dependsOn: [authClientSecretStorage]
+  dependsOn: [authClientSecretStorage, backendKeyVaultAccess]
 }
 
 
@@ -194,7 +228,7 @@ module openAiRoleBackend 'core/security/role.bicep' = if (deployAzureOpenAi) {
   scope: openAiResourceGroup
   name: 'openai-role-backend'
   params: {
-    principalId: aca.outputs.SERVICE_ACA_IDENTITY_PRINCIPAL_ID
+    principalId: acaIdentity.outputs.principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
     principalType: 'ServicePrincipal'
   }
@@ -212,10 +246,10 @@ output AZURE_OPENAI_RESOURCE_GROUP_LOCATION string = deployAzureOpenAi ? openAiR
 output OPENAICOM_API_KEY_SECRET_NAME string = openAiComAPIKeySecretName
 output OPENAI_MODEL_NAME string = openAiConfig.modelName
 
-output SERVICE_ACA_IDENTITY_PRINCIPAL_ID string = aca.outputs.SERVICE_ACA_IDENTITY_PRINCIPAL_ID
-output SERVICE_ACA_NAME string = aca.outputs.SERVICE_ACA_NAME
-output SERVICE_ACA_URI string = aca.outputs.SERVICE_ACA_URI
-output SERVICE_ACA_IMAGE_NAME string = aca.outputs.SERVICE_ACA_IMAGE_NAME
+output SERVICE_ACA_IDENTITY_PRINCIPAL_ID string = acaIdentity.outputs.principalId
+output SERVICE_ACA_NAME string = aca.outputs.name
+output SERVICE_ACA_URI string = aca.outputs.uri
+output SERVICE_ACA_IMAGE_NAME string = aca.outputs.imageName
 
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = containerApps.outputs.environmentName
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer

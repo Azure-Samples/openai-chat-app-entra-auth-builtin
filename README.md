@@ -173,15 +173,31 @@ azd pipeline config
 
 ## Development server
 
-Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deploying), you can now run the Quart app in your development environment:
+Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deploying), you can now run the Python app in your development environment:
 
-```shell
-python -m quart --app src.quartapp run --port 50505 --reload
-```
+1. Copy `.env.sample` into `.env`:
 
-This will start the app on port 50505, and you can access it at `http://localhost:50505`.
+    ```shell
+    cp .env.sample .env
+    ```
 
-To save costs during development, you may point the app at a [local LLM server](/docs/local_ollama.md).
+2. For use with Azure OpenAI, run this command to get the Azure OpenAI endpoint URI from your deployed resource group and paste it in the `.env` file:
+
+    ```shell
+    azd env get-value AZURE_OPENAI_ENDPOINT
+    ```
+
+3. For use with OpenAI.com, either set the value of `OPENAICOM_API_KEY` in the `.env` file to your OpenAI API key, or set the environment values of both `OPENAICOM_API_KEY_SECRET_NAME` and `AZURE_KEY_VAULT_NAME` in the `.env` file.
+
+4. For use with a local LLM server (to save costs during development), see [our guide](/docs/local_ollama.md).
+
+5. Run the app:
+
+    ```shell
+    python -m quart --app src.quartapp run --port 50505 --reload
+    ```
+
+    This will start the app on port 50505, and you can access it at `http://localhost:50505`.
 
 ## Costs
 
