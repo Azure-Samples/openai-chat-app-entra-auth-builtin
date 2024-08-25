@@ -29,7 +29,7 @@ param openAiResourceGroupName string = ''
 
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#standard-deployment-model-availability
 @description('Location for the OpenAI resource')
-@allowed([ 'eastus' ])
+@allowed([ 'eastus', 'swedencentral'])
 @metadata({
   azd: {
     type: 'location'
