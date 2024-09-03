@@ -26,10 +26,6 @@ param keyVaultName string = ''
 
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
-
-// https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#standard-deployment-model-availability
-@description('Location for the OpenAI resource')
-@allowed([ 'eastus', 'swedencentral'])
 @metadata({
   azd: {
     type: 'location'
@@ -42,7 +38,7 @@ param openAiDeploymentCapacity int = 30
 param openAiApiVersion string = ''
 
 var openAiConfig = {
-  modelName: deployAzureOpenAi ? 'gpt-4o-mini' : 'gpt-4o-mini'
+  modelName: 'gpt-4o-mini'
   deploymentName: !empty(openAiDeploymentName) ? openAiDeploymentName : 'chatgpt'
   deploymentCapacity: openAiDeploymentCapacity != 0 ? openAiDeploymentCapacity : 30
 }
@@ -95,7 +91,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
           version: '2024-07-18'
         }
         sku: {
-          name: 'Standard'
+          name: 'GlobalStandard'
           capacity: openAiConfig.deploymentCapacity
         }
       }
