@@ -26,11 +26,6 @@ param keyVaultName string = ''
 
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
-@metadata({
-  azd: {
-    type: 'location'
-  }
-})
 param openAiResourceLocation string
 param openAiDeploymentName string = 'chatgpt'
 param openAiSkuName string = ''
