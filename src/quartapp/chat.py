@@ -78,7 +78,6 @@ async def configure_openai():
         bp.openai_client = openai.AsyncOpenAI(
             **client_args,
         )
-
         bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-4o-mini"
     else:
         raise ValueError("No OpenAI configuration provided. Check your environment variables.")
