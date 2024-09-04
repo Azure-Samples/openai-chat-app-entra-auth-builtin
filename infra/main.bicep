@@ -237,7 +237,6 @@ module openAiRoleBackend 'core/security/role.bicep' = if (deployAzureOpenAi) {
 
 
 output AZURE_LOCATION string = location
-output AZURE_TENANT_ID string = tenantId
 
 output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = deployAzureOpenAi ? openAiConfig.deploymentName : ''
 output AZURE_OPENAI_API_VERSION string = deployAzureOpenAi ? openAiApiVersion : ''
