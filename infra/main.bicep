@@ -26,13 +26,24 @@ param keyVaultName string = ''
 
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
+
+// https://learn.microsoft.com/azure/ai-services/openai/concepts/models#standard-deployment-model-availability
+@description('Location for the OpenAI resource')
+@allowed([ 'eastus', 'swedencentral' ])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
+param openAiResourceLocation string
 param openAiDeploymentName string = 'chatgpt'
 param openAiSkuName string = ''
-param openAiDeploymentCapacity int = 30
+param openAiDeploymentCapacity int // Set in main.parameters.json
 param openAiApiVersion string = ''
 
 var openAiConfig = {
   modelName: 'gpt-4o-mini'
+  modelVersion: '2024-07-18'
   deploymentName: !empty(openAiDeploymentName) ? openAiDeploymentName : 'chatgpt'
   deploymentCapacity: openAiDeploymentCapacity != 0 ? openAiDeploymentCapacity : 30
 }
@@ -71,9 +82,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
   params: {
     name: !empty(openAiResourceName) ? openAiResourceName : '${resourceToken}-cog'
     tags: tags
-    // Only one location is currently available for gpt-4o-mini GlobalStandard model:
-    // https://learn.microsoft.com/azure/ai-services/openai/concepts/models#global-standard-model-availability
-    location: 'eastus'
+    location: openAiResourceLocation
     sku: {
       name: !empty(openAiSkuName) ? openAiSkuName : 'S0'
     }
@@ -84,10 +93,10 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
         model: {
           format: 'OpenAI'
           name: openAiConfig.modelName
-          version: '2024-07-18'
+          version: openAiConfig.modelVersion
         }
         sku: {
-          name: 'GlobalStandard'
+          name: 'Standard'
           capacity: openAiConfig.deploymentCapacity
         }
       }
@@ -190,7 +199,7 @@ module aca 'aca.bicep' = {
     identityName: acaIdentity.outputs.name
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    openAiDeploymentName: deployAzureOpenAi ? openAiDeploymentName : ''
+    openAiDeploymentName: deployAzureOpenAi ? openAiConfig.deploymentName : ''
     openAiEndpoint: deployAzureOpenAi ? openAi.outputs.endpoint : ''
     openAiApiVersion: deployAzureOpenAi ? openAiApiVersion : ''
     openAiComAPIKeySecretName: openAiComAPIKeySecretName
@@ -228,8 +237,9 @@ module openAiRoleBackend 'core/security/role.bicep' = if (deployAzureOpenAi) {
 
 
 output AZURE_LOCATION string = location
+output AZURE_TENANT_ID string = tenantId
 
-output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = deployAzureOpenAi ? openAiDeploymentName : ''
+output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = deployAzureOpenAi ? openAiConfig.deploymentName : ''
 output AZURE_OPENAI_API_VERSION string = deployAzureOpenAi ? openAiApiVersion : ''
 output AZURE_OPENAI_ENDPOINT string = deployAzureOpenAi ? openAi.outputs.endpoint : ''
 output AZURE_OPENAI_RESOURCE string = deployAzureOpenAi ? openAi.outputs.name : ''

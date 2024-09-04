@@ -10,8 +10,9 @@ param location string = 'swedencentral'
 module main 'main.bicep' = {
   name: 'main'
   params: {
-    location: location
-    authTenantId: '00000000-0000-0000-0000-000000000000'
     name: 'chatapp'
+    location: location
+    openAiResourceLocation: location
+    authTenantId: '00000000-0000-0000-0000-000000000000'
   }
 }

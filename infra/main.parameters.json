@@ -26,6 +26,9 @@
       "openAiResourceGroupLocation": {
         "value": "${AZURE_OPENAI_RESOURCE_GROUP_LOCATION}"
       },
+      "openAiDeploymentCapacity": {
+        "value": "${AZURE_OPENAI_DEPLOYMENT_CAPACITY=30}"
+      },
       "openAiSkuName": {
         "value": "${AZURE_OPENAI_SKU_NAME}"
       },
