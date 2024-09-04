@@ -69,8 +69,11 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
   name: 'openai'
   scope: openAiResourceGroup
   params: {
-    name: !empty(openAiResourceName) ? openAiResourceName : '${resourceToken}-cog'
+    name: !empty(openAiResourceName) ? openAiResourceName : '${resourceToken}-cogglob'
     tags: tags
+    // Only one location is currently available for gpt-4o-mini GlobalStandard model:
+    // https://learn.microsoft.com/azure/ai-services/openai/concepts/models#global-standard-model-availability
+    location: 'eastus'
     sku: {
       name: !empty(openAiSkuName) ? openAiSkuName : 'S0'
     }
