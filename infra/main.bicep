@@ -26,7 +26,6 @@ param keyVaultName string = ''
 
 param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
-param openAiResourceLocation string
 param openAiDeploymentName string = 'chatgpt'
 param openAiSkuName string = ''
 param openAiDeploymentCapacity int = 30
@@ -71,7 +70,6 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
   scope: openAiResourceGroup
   params: {
     name: !empty(openAiResourceName) ? openAiResourceName : '${resourceToken}-cog'
-    location: !empty(openAiResourceLocation) ? openAiResourceLocation : location
     tags: tags
     sku: {
       name: !empty(openAiSkuName) ? openAiSkuName : 'S0'
