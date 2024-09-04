@@ -49,7 +49,7 @@ def mock_openai_chatcompletion(monkeypatch):
                         )
                     ],
                     created=1703462735,
-                    model="gpt-35-turbo",
+                    model="gpt-4o-mini",
                 ),
             ]
             answer_deltas = answer.split(" ")
@@ -79,7 +79,7 @@ def mock_openai_chatcompletion(monkeypatch):
                             )
                         ],
                         created=1703462735,
-                        model="gpt-35-turbo",
+                        model="gpt-4o-mini",
                     )
                 )
             self.chunks.append(
@@ -96,7 +96,7 @@ def mock_openai_chatcompletion(monkeypatch):
                         )
                     ],
                     created=1703462735,
-                    model="gpt-35-turbo",
+                    model="gpt-4o-mini",
                 )
             )
 
