@@ -8,6 +8,8 @@ services:
     project: ./src
     language: py
     host: containerapp
+    docker:
+      remoteBuild: true
 hooks:
     preprovision:
       windows:
