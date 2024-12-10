@@ -231,3 +231,7 @@ You may want to consider additional security measures, such as:
 * [OpenAI Chat App with Managed Identity](https://github.com/Azure-Samples/openai-chat-app-quickstart): Similar to this project, but doesn't include Microsoft Entra authentication.
 * [RAG chat with Azure AI Search + Python](https://github.com/Azure-Samples/azure-search-openai-demo/): A more advanced chat app that uses Azure AI Search to ground responses in domain knowledge.
 * [Develop Python apps that use Azure AI services](https://learn.microsoft.com/azure/developer/python/azure-ai-for-python-developers)
+
+## Credits
+
+* Kudos to Pamela Fox for her awesome [Azure-Samples/openai-chat-app-entra-auth-builtin/](https://github.com/Azure-Samples/openai-chat-app-entra-auth-builtin/) that we heavily reused to setup authentication.
