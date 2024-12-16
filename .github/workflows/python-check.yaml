@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-20.04"]
-        python_version: ["3.11"]
+        os: ["ubuntu-20.04", "macos-latest-xlarge"]
+        python_version: ["3.11", "3.12", "3.13"]
     steps:
         - uses: actions/checkout@v4
         - name: Setup python

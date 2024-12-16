@@ -53,7 +53,7 @@ Once you've opened the project in Codespaces, in Dev Containers, or locally, you
 
 ### Azure account setup
 
-1. Sign up for a [free Azure account](https://azure.microsoft.com/free/) and create an Azure Subscription.
+1. Sign up for a [free Azure account](https://azure.microsoft.com/free/) and create an Azure Subscription. See [guide to deploying with the free trial](docs/customize_deploy.md#deploying-with-the-free-trial).
 2. Check that you have the necessary permissions:
 
     * Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner). If you don't have subscription-level permissions, you must be granted [RBAC](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview) for an existing resource group and [deploy to that existing group](/docs/deploy_existing.md#resource-group).
@@ -143,7 +143,7 @@ Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [M
     azd auth login --tenant-id AZURE-TENANT-ID
     ```
 
-1. (Optional) This is the point where you can customize the deployment by setting environment variables, in order to use [existing Azure resources](/docs/deploy_existing.md).
+1. (Optional) This is the point where you can [customize the deployment](/docs/customize_deploy.md) by setting environment variables, in order to use existing Azure resources or reduce the Azure OpenAI capacity.
 
 1. Provision and deploy all the resources:
 
