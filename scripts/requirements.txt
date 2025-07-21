@@ -4,37 +4,37 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-aiohappyeyeballs==2.4.4
+aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.11.10
+aiohttp==3.11.16
     # via
     #   -r scripts/requirements.in
     #   microsoft-kiota-authentication-azure
 aiosignal==1.3.2
     # via aiohttp
-anyio==4.7.0
+anyio==4.9.0
     # via httpx
-attrs==24.3.0
+attrs==25.3.0
     # via aiohttp
-azure-core==1.32.0
+azure-core==1.33.0
     # via
     #   azure-identity
     #   microsoft-kiota-authentication-azure
-azure-identity==1.19.0
+azure-identity==1.21.0
     # via
     #   -r scripts/requirements.in
     #   msgraph-beta-sdk
     #   msgraph-sdk
-certifi==2024.12.14
+certifi==2025.1.31
     # via
     #   httpcore
     #   httpx
     #   requests
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
-cryptography==44.0.0
+cryptography==44.0.2
     # via
     #   azure-identity
     #   msal
@@ -49,9 +49,9 @@ frozenlist==1.5.0
     #   aiosignal
 h11==0.14.0
     # via httpcore
-h2==4.1.0
+h2==4.2.0
     # via httpx
-hpack==4.0.0
+hpack==4.1.0
     # via h2
 httpcore==1.0.7
     # via httpx
@@ -59,7 +59,7 @@ httpx[http2]==0.28.1
     # via
     #   microsoft-kiota-http
     #   msgraph-core
-hyperframe==6.0.1
+hyperframe==6.1.0
     # via h2
 idna==3.10
     # via
@@ -110,11 +110,11 @@ microsoft-kiota-serialization-text==1.6.6
     # via
     #   msgraph-beta-sdk
     #   msgraph-sdk
-msal==1.31.1
+msal==1.32.0
     # via
     #   azure-identity
     #   msal-extensions
-msal-extensions==1.2.0
+msal-extensions==1.3.1
     # via azure-identity
 msgraph-beta-sdk==1.19.0
     # via -r scripts/requirements.in
@@ -124,7 +124,7 @@ msgraph-core==1.1.7
     #   msgraph-sdk
 msgraph-sdk==1.19.0
     # via -r scripts/requirements.in
-multidict==6.1.0
+multidict==6.3.2
     # via
     #   aiohttp
     #   yarl
@@ -147,9 +147,9 @@ pendulum==3.0.0
     #   microsoft-kiota-serialization-form
     #   microsoft-kiota-serialization-json
     #   microsoft-kiota-serialization-multipart
-portalocker==2.10.1
+portalocker==3.1.1
     # via msal-extensions
-propcache==0.2.1
+propcache==0.3.1
     # via
     #   aiohttp
     #   yarl
@@ -166,7 +166,7 @@ python-dateutil==2.9.0.post0
     #   microsoft-kiota-serialization-text
     #   pendulum
     #   time-machine
-python-dotenv==1.0.1
+python-dotenv==1.1.0
     # via -r scripts/requirements.in
 requests==2.32.3
     # via
@@ -184,7 +184,7 @@ std-uritemplate==2.0.1
     # via microsoft-kiota-abstractions
 time-machine==2.16.0
     # via pendulum
-typing-extensions==4.12.2
+typing-extensions==4.13.1
     # via
     #   anyio
     #   azure-core
@@ -192,13 +192,13 @@ typing-extensions==4.12.2
     #   opentelemetry-sdk
 tzdata==2024.2
     # via pendulum
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   microsoft-kiota-http
     #   requests
 wrapt==1.17.0
     # via deprecated
-yarl==1.18.3
+yarl==1.19.0
     # via aiohttp
 zipp==3.21.0
     # via importlib-metadata
