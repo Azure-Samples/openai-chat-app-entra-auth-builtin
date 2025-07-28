@@ -6,4 +6,5 @@ __pycache__/
 scripts/.venv
 .idea/
 .venv/
+.venv_test/
 infra/main.json
