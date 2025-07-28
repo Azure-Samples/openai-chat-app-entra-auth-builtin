@@ -168,7 +168,7 @@ python-dateutil==2.9.0.post0
     #   time-machine
 python-dotenv==1.0.1
     # via -r requirements.in
-requests==2.32.3
+requests==2.32.4
     # via
     #   azure-core
     #   msal
