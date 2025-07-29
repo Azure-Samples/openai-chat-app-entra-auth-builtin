@@ -147,7 +147,7 @@ pyyaml==6.0.2
     #   uvicorn
 quart==0.20.0
     # via quartapp (pyproject.toml)
-requests==2.32.3
+requests==2.32.4
     # via
     #   azure-core
     #   msal
@@ -168,7 +168,7 @@ typing-extensions==4.12.2
     #   openai
     #   pydantic
     #   pydantic-core
-urllib3==2.2.3
+urllib3==2.5.0
     # via requests
 uvicorn[standard]==0.34.0
     # via quartapp (pyproject.toml)

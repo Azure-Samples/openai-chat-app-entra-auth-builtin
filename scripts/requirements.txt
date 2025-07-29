@@ -168,7 +168,7 @@ python-dateutil==2.9.0.post0
     #   time-machine
 python-dotenv==1.0.1
     # via -r requirements.in
-requests==2.32.3
+requests==2.32.4
     # via
     #   azure-core
     #   msal
@@ -192,7 +192,7 @@ typing-extensions==4.12.2
     #   opentelemetry-sdk
 tzdata==2024.2
     # via pendulum
-urllib3==2.2.3
+urllib3==2.5.0
     # via
     #   microsoft-kiota-http
     #   requests
