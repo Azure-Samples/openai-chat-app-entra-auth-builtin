@@ -47,13 +47,13 @@ frozenlist==1.5.0
     # via
     #   aiohttp
     #   aiosignal
-h11==0.14.0
+h11==0.16.0
     # via httpcore
 h2==4.1.0
     # via httpx
 hpack==4.0.0
     # via h2
-httpcore==1.0.7
+httpcore==1.0.9
     # via httpx
 httpx[http2]==0.28.1
     # via
