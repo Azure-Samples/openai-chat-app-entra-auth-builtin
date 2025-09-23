@@ -7,7 +7,7 @@ dependencies = [
     "werkzeug",
     "gunicorn",
     "uvicorn[standard]",
-    "openai",
+    "openai>=1.0.0",
     "azure-identity",
     "azure-keyvault-secrets",
     "aiohttp",

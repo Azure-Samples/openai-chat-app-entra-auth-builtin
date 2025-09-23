@@ -39,7 +39,6 @@ param openAiResourceLocation string
 param openAiDeploymentName string = 'chatgpt'
 param openAiSkuName string = ''
 param openAiDeploymentCapacity int // Set in main.parameters.json
-param openAiApiVersion string = ''
 
 var openAiConfig = {
   modelName: 'gpt-4o-mini'
@@ -201,7 +200,6 @@ module aca 'aca.bicep' = {
     containerRegistryName: containerApps.outputs.registryName
     openAiDeploymentName: deployAzureOpenAi ? openAiConfig.deploymentName : ''
     openAiEndpoint: deployAzureOpenAi ? openAi.outputs.endpoint : ''
-    openAiApiVersion: deployAzureOpenAi ? openAiApiVersion : ''
     openAiComAPIKeySecretName: openAiComAPIKeySecretName
     exists: acaExists
     authClientId: authClientId
@@ -239,7 +237,6 @@ module openAiRoleBackend 'core/security/role.bicep' = if (deployAzureOpenAi) {
 output AZURE_LOCATION string = location
 
 output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = deployAzureOpenAi ? openAiConfig.deploymentName : ''
-output AZURE_OPENAI_API_VERSION string = deployAzureOpenAi ? openAiApiVersion : ''
 output AZURE_OPENAI_ENDPOINT string = deployAzureOpenAi ? openAi.outputs.endpoint : ''
 output AZURE_OPENAI_RESOURCE string = deployAzureOpenAi ? openAi.outputs.name : ''
 output AZURE_OPENAI_RESOURCE_GROUP string = deployAzureOpenAi ? openAiResourceGroup.name : ''
