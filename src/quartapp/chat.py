@@ -33,6 +33,7 @@ async def configure_openai():
         bp.openai_client = openai.AsyncOpenAI(
             **client_args,
         )
+        bp.openai_model_arg = os.getenv("OPENAI_MODEL_NAME") or "gpt-4o-mini"
     elif os.getenv("AZURE_OPENAI_ENDPOINT"):
         # Use an Azure OpenAI endpoint instead,
         # either with a key or with keyless authentication
