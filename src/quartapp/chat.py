@@ -49,16 +49,15 @@ async def configure_openai():
             # This should work on ACA as long as AZURE_CLIENT_ID is set to the user-assigned managed identity
             current_app.logger.info("Using Azure OpenAI with default credential")
             default_credential = get_azure_credential()
-            client_args["azure_ad_token_provider"] = azure.identity.aio.get_bearer_token_provider(
+            client_args["api_key"] = azure.identity.aio.get_bearer_token_provider(
                 default_credential, "https://cognitiveservices.azure.com/.default"
             )
         if not os.getenv("AZURE_OPENAI_ENDPOINT"):
             raise ValueError("AZURE_OPENAI_ENDPOINT is required for Azure OpenAI")
         if not os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT"):
             raise ValueError("AZURE_OPENAI_CHATGPT_DEPLOYMENT is required for Azure OpenAI")
-        bp.openai_client = openai.AsyncAzureOpenAI(
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION") or "2024-02-15-preview",
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        bp.openai_client = openai.AsyncOpenAI(
+            base_url=os.getenv("AZURE_OPENAI_ENDPOINT"),
             **client_args,
         )
         # Note: Azure OpenAI takes the deployment name as the model name
