@@ -25,7 +25,7 @@ jobs:
             az bicep lint --file infra/main.bicep --diagnostics-format sarif > bicep-results.sarif
   
       - name: Upload results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: bicep-results.sarif
   psrule:
@@ -52,6 +52,6 @@ jobs:
           PSRULE_CONFIGURATION_AZURE_BICEP_FILE_EXPANSION_TIMEOUT: '30'
 
       - name: Upload results to security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: reports/ps-rule-results.sarif
