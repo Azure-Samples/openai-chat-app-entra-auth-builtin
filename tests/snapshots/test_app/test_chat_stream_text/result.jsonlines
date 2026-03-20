@@ -1,0 +1,7 @@
+{"delta": {"content": "The"}}
+{"delta": {"content": " capital"}}
+{"delta": {"content": " of"}}
+{"delta": {"content": " France"}}
+{"delta": {"content": " is"}}
+{"delta": {"content": " Paris."}}
+{"delta": {"content": null}, "finish_reason": "stop"}

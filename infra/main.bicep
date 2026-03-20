@@ -29,22 +29,21 @@ param openAiResourceGroupName string = ''
 
 // https://learn.microsoft.com/azure/ai-services/openai/concepts/models#standard-deployment-model-availability
 @description('Location for the OpenAI resource')
-@allowed([ 'eastus', 'swedencentral' ])
+@allowed([ 'eastus2', 'swedencentral' ])
 @metadata({
   azd: {
     type: 'location'
   }
 })
 param openAiResourceLocation string
-param openAiDeploymentName string = 'chatgpt'
+param openAiDeploymentName string = 'gpt-5.2'
 param openAiSkuName string = ''
 param openAiDeploymentCapacity int // Set in main.parameters.json
-param openAiApiVersion string = ''
 
 var openAiConfig = {
-  modelName: 'gpt-4o-mini'
-  modelVersion: '2024-07-18'
-  deploymentName: !empty(openAiDeploymentName) ? openAiDeploymentName : 'chatgpt'
+  modelName: 'gpt-5.2'
+  modelVersion: '2025-12-11'
+  deploymentName: !empty(openAiDeploymentName) ? openAiDeploymentName : 'gpt-5.2'
   deploymentCapacity: openAiDeploymentCapacity != 0 ? openAiDeploymentCapacity : 30
 }
 
@@ -96,7 +95,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = if (deployAzureOpenAi) {
           version: openAiConfig.modelVersion
         }
         sku: {
-          name: 'Standard'
+          name: 'GlobalStandard'
           capacity: openAiConfig.deploymentCapacity
         }
       }
@@ -201,7 +200,6 @@ module aca 'aca.bicep' = {
     containerRegistryName: containerApps.outputs.registryName
     openAiDeploymentName: deployAzureOpenAi ? openAiConfig.deploymentName : ''
     openAiEndpoint: deployAzureOpenAi ? openAi.outputs.endpoint : ''
-    openAiApiVersion: deployAzureOpenAi ? openAiApiVersion : ''
     openAiComAPIKeySecretName: openAiComAPIKeySecretName
     exists: acaExists
     authClientId: authClientId
@@ -239,7 +237,6 @@ module openAiRoleBackend 'core/security/role.bicep' = if (deployAzureOpenAi) {
 output AZURE_LOCATION string = location
 
 output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = deployAzureOpenAi ? openAiConfig.deploymentName : ''
-output AZURE_OPENAI_API_VERSION string = deployAzureOpenAi ? openAiApiVersion : ''
 output AZURE_OPENAI_ENDPOINT string = deployAzureOpenAi ? openAi.outputs.endpoint : ''
 output AZURE_OPENAI_RESOURCE string = deployAzureOpenAi ? openAi.outputs.name : ''
 output AZURE_OPENAI_RESOURCE_GROUP string = deployAzureOpenAi ? openAiResourceGroup.name : ''
