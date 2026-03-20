@@ -10,7 +10,6 @@ from msgraph.generated.models.public_client_application import PublicClientAppli
 from msgraph.generated.models.web_application import WebApplication
 from rich.logging import RichHandler
 
-
 logging.basicConfig(
     level=logging.WARNING, format="%(message)s", handlers=[RichHandler(rich_tracebacks=True, log_time_format="")]
 )
