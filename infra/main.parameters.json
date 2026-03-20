@@ -32,9 +32,6 @@
       "openAiSkuName": {
         "value": "${AZURE_OPENAI_SKU_NAME}"
       },
-      "openAiApiVersion": {
-        "value": "${AZURE_OPENAI_API_VERSION}"
-      },
       "openAiComAPIKey": {
         "value": "${OPENAICOM_API_KEY}"
       },

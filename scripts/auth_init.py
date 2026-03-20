@@ -297,7 +297,7 @@ async def main():
         logger.error("Error occurred: %s", e)
         sys.exit(1)
     try:
-        (tenant_type, _) = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
+        tenant_type, _ = await get_tenant_details(AzureDeveloperCliCredential(tenant_id=tenant_id), tenant_id)
         logger.info(f"Detected a tenant of type: {tenant_type}")
         if tenant_type == "CIAM":
             current_user = os.getenv("AZURE_AUTH_EXTID_APP_OWNER", None)
@@ -306,7 +306,7 @@ async def main():
 
         app_identifier = os.getenv("AZURE_CLIENT_IDENTIFIER", random_app_identifier())
         update_azd_env("AZURE_CLIENT_IDENTIFIER", app_identifier)
-        (app_obj_id, app_id, sp_id) = await create_or_update_application_with_secret(
+        app_obj_id, app_id, sp_id = await create_or_update_application_with_secret(
             graph_client,
             app_id_env_var="AZURE_CLIENT_APP_ID",
             app_secret_env_var="AZURE_CLIENT_APP_SECRET",

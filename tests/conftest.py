@@ -1,7 +1,6 @@
 import os
 from unittest import mock
 
-import openai
 import pytest
 import pytest_asyncio
 from azure.keyvault.secrets.aio import SecretClient
@@ -12,116 +11,46 @@ from . import mock_cred
 
 
 @pytest.fixture
-def mock_openai_chatcompletion(monkeypatch):
-    class AsyncChatCompletionIterator:
+def mock_openai_responses(monkeypatch):
+    class MockResponseEvent:
+        """Simulates a Responses API streaming event."""
+
+        def __init__(self, event_type, delta=None):
+            self.type = event_type
+            self.delta = delta
+
+    class AsyncResponseIterator:
         def __init__(self, answer: str):
-            self.chunk_index = 0
-            self.chunks = [
-                # This is an Azure-specific chunk solely for prompt_filter_results
-                openai.types.chat.ChatCompletionChunk(
-                    object="chat.completion.chunk",
-                    choices=[],
-                    id="",
-                    created=0,
-                    model="",
-                    prompt_filter_results=[
-                        {
-                            "prompt_index": 0,
-                            "content_filter_results": {
-                                "hate": {"filtered": False, "severity": "safe"},
-                                "self_harm": {"filtered": False, "severity": "safe"},
-                                "sexual": {"filtered": False, "severity": "safe"},
-                                "violence": {"filtered": False, "severity": "safe"},
-                            },
-                        }
-                    ],
-                ),
-                openai.types.chat.ChatCompletionChunk(
-                    id="test-123",
-                    object="chat.completion.chunk",
-                    choices=[
-                        openai.types.chat.chat_completion_chunk.Choice(
-                            delta=openai.types.chat.chat_completion_chunk.ChoiceDelta(content=None, role="assistant"),
-                            index=0,
-                            finish_reason=None,
-                            # Only Azure includes content_filter_results
-                            content_filter_results={},
-                        )
-                    ],
-                    created=1703462735,
-                    model="gpt-4o-mini",
-                ),
-            ]
+            self.event_index = 0
+            self.events = []
             answer_deltas = answer.split(" ")
-            for answer_index, answer_delta in enumerate(answer_deltas):
-                # Completion chunks include whitespace, so we need to add it back in
-                if answer_index > 0:
-                    answer_delta = " " + answer_delta
-                self.chunks.append(
-                    openai.types.chat.ChatCompletionChunk(
-                        id="test-123",
-                        object="chat.completion.chunk",
-                        choices=[
-                            openai.types.chat.chat_completion_chunk.Choice(
-                                delta=openai.types.chat.chat_completion_chunk.ChoiceDelta(
-                                    role=None, content=answer_delta
-                                ),
-                                finish_reason=None,
-                                index=0,
-                                logprobs=None,
-                                # Only Azure includes content_filter_results
-                                content_filter_results={
-                                    "hate": {"filtered": False, "severity": "safe"},
-                                    "self_harm": {"filtered": False, "severity": "safe"},
-                                    "sexual": {"filtered": False, "severity": "safe"},
-                                    "violence": {"filtered": False, "severity": "safe"},
-                                },
-                            )
-                        ],
-                        created=1703462735,
-                        model="gpt-4o-mini",
-                    )
-                )
-            self.chunks.append(
-                openai.types.chat.ChatCompletionChunk(
-                    id="test-123",
-                    object="chat.completion.chunk",
-                    choices=[
-                        openai.types.chat.chat_completion_chunk.Choice(
-                            delta=openai.types.chat.chat_completion_chunk.ChoiceDelta(content=None, role=None),
-                            index=0,
-                            finish_reason="stop",
-                            # Only Azure includes content_filter_results
-                            content_filter_results={},
-                        )
-                    ],
-                    created=1703462735,
-                    model="gpt-4o-mini",
-                )
-            )
+            for i, word in enumerate(answer_deltas):
+                if i > 0:
+                    word = " " + word
+                self.events.append(MockResponseEvent("response.output_text.delta", delta=word))
+            self.events.append(MockResponseEvent("response.completed"))
 
         def __aiter__(self):
             return self
 
         async def __anext__(self):
-            if self.chunk_index < len(self.chunks):
-                next_chunk = self.chunks[self.chunk_index]
-                self.chunk_index += 1
-                return next_chunk
+            if self.event_index < len(self.events):
+                event = self.events[self.event_index]
+                self.event_index += 1
+                return event
             else:
                 raise StopAsyncIteration
 
     async def mock_acreate(*args, **kwargs):
-        # Only mock a stream=True completion
-        last_message = kwargs.get("messages")[-1]["content"]
+        last_message = kwargs.get("input", [])[-1]["content"]
         if last_message == "What is the capital of France?":
-            return AsyncChatCompletionIterator("The capital of France is Paris.")
+            return AsyncResponseIterator("The capital of France is Paris.")
         elif last_message == "What is the capital of Germany?":
-            return AsyncChatCompletionIterator("The capital of Germany is Berlin.")
+            return AsyncResponseIterator("The capital of Germany is Berlin.")
         else:
             raise ValueError(f"Unexpected message: {last_message}")
 
-    monkeypatch.setattr("openai.resources.chat.AsyncCompletions.create", mock_acreate)
+    monkeypatch.setattr("openai.resources.responses.AsyncResponses.create", mock_acreate)
 
 
 @pytest.fixture
@@ -144,10 +73,10 @@ def mock_keyvault_secretclient(monkeypatch):
 
 
 @pytest_asyncio.fixture
-async def client(monkeypatch, mock_openai_chatcompletion, mock_defaultazurecredential):
+async def client(monkeypatch, mock_openai_responses, mock_defaultazurecredential):
     with mock.patch.dict(os.environ, clear=True):
         monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "test-openai-service.openai.azure.com")
-        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chatgpt")
+        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "gpt-5.2")
 
         quart_app = quartapp.create_app()
 

@@ -5,6 +5,7 @@ import os
 import azure.identity.aio
 from azure.keyvault.secrets.aio import SecretClient
 import openai
+from openai import AsyncOpenAI
 from quart import (
     Blueprint,
     Response,
@@ -49,19 +50,17 @@ async def configure_openai():
             # This should work on ACA as long as AZURE_CLIENT_ID is set to the user-assigned managed identity
             current_app.logger.info("Using Azure OpenAI with default credential")
             default_credential = get_azure_credential()
-            client_args["azure_ad_token_provider"] = azure.identity.aio.get_bearer_token_provider(
+            client_args["api_key"] = azure.identity.aio.get_bearer_token_provider(
                 default_credential, "https://cognitiveservices.azure.com/.default"
             )
         if not os.getenv("AZURE_OPENAI_ENDPOINT"):
             raise ValueError("AZURE_OPENAI_ENDPOINT is required for Azure OpenAI")
         if not os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT"):
             raise ValueError("AZURE_OPENAI_CHATGPT_DEPLOYMENT is required for Azure OpenAI")
-        bp.openai_client = openai.AsyncAzureOpenAI(
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION") or "2024-02-15-preview",
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        bp.openai_client = AsyncOpenAI(
+            base_url=f"{os.getenv('AZURE_OPENAI_ENDPOINT').rstrip('/')}/openai/v1/",
             **client_args,
         )
-        # Note: Azure OpenAI takes the deployment name as the model name
         bp.openai_model_arg = os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT")
     elif os.getenv("OPENAICOM_API_KEY_SECRET_NAME") or os.getenv("OPENAICOM_API_KEY"):
         current_app.logger.info("Using OpenAI.com OpenAI with key")
@@ -118,17 +117,19 @@ async def chat_handler():
             {"role": "system", "content": "You are a helpful assistant."},
         ] + request_messages
 
-        chat_coroutine = bp.openai_client.chat.completions.create(
-            # Azure Open AI takes the deployment name as the model name
+        chat_coroutine = bp.openai_client.responses.create(
             model=bp.openai_model_arg,
-            messages=all_messages,
+            input=all_messages,
+            max_output_tokens=1000,
             stream=True,
+            store=False,
         )
         try:
             async for event in await chat_coroutine:
-                event_dict = event.model_dump()
-                if event_dict["choices"]:
-                    yield json.dumps(event_dict["choices"][0], ensure_ascii=False) + "\n"
+                if event.type == "response.output_text.delta":
+                    yield json.dumps({"delta": {"content": event.delta}}, ensure_ascii=False) + "\n"
+                elif event.type == "response.completed":
+                    yield json.dumps({"delta": {"content": None}, "finish_reason": "stop"}, ensure_ascii=False) + "\n"
         except Exception as e:
             current_app.logger.error(e)
             yield json.dumps({"error": str(e)}, ensure_ascii=False) + "\n"

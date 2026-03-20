@@ -94,7 +94,7 @@ async def main():
     credential = AzureDeveloperCliCredential(tenant_id=tenant_id)
     graph_client = GraphServiceClient(credentials=credential)
 
-    (tenant_type, default_domain) = await get_tenant_details(credential, tenant_id)
+    tenant_type, default_domain = await get_tenant_details(credential, tenant_id)
     if tenant_type != "CIAM":
         logger.info("You don't need to run this script for non-ExternalId tenant...")
         exit(0)
@@ -106,7 +106,7 @@ async def main():
     update_azd_env("AZURE_AUTH_TENANT_ID", tenant_id)
     update_azd_env("AZURE_AUTH_LOGIN_ENDPOINT", login_domain)
 
-    (obj_id, app_id, sp_id) = await create_or_update_application_with_secret(
+    obj_id, app_id, sp_id = await create_or_update_application_with_secret(
         graph_client,
         app_id_env_var="AZURE_AUTH_EXTID_APP_ID",
         app_secret_env_var="AZURE_AUTH_EXTID_APP_SECRET",
