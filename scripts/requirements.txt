@@ -6,7 +6,7 @@
 #
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.3
+aiohttp==3.13.5
     # via
     #   -r scripts/requirements.in
     #   microsoft-kiota-authentication-azure
@@ -148,7 +148,7 @@ requests==2.32.5
     # via
     #   azure-core
     #   msal
-rich==14.3.3
+rich==15.0.0
     # via -r scripts/requirements.in
 std-uritemplate==2.0.8
     # via microsoft-kiota-abstractions
