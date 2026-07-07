@@ -160,16 +160,6 @@ Once you have either setup [Microsoft Entra ID](#microsoft-entra-id-setup) or [M
     azd deploy
     ```
 
-### Continuous deployment with GitHub Actions
-
-This project includes a Github workflow for deploying the resources to Azure
-on every push to main. That workflow requires several Azure-related authentication secrets
-to be stored as Github action secrets. To set that up, run:
-
-```shell
-azd pipeline config
-```
-
 ## Development server
 
 Assuming you've run the steps in [Opening the project](#opening-the-project) and the steps in [Deploying](#deploying), you can now run the Python app in your development environment:
