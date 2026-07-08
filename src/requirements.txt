@@ -132,7 +132,7 @@ pydantic==2.12.5
     # via openai
 pydantic-core==2.41.5
     # via pydantic
-pyjwt[crypto]==2.12.1
+pyjwt[crypto]==2.13.0
     # via
     #   msal
     #   pyjwt
