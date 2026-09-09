@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 
-from auth_common import get_application, update_azd_env, load_azd_env
+from auth_common import get_application, load_azd_env, update_azd_env
 from azure.identity.aio import AzureDeveloperCliCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.models.application import Application

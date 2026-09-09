@@ -11,38 +11,22 @@ from auth_common import (
     get_current_user,
     get_microsoft_graph_service_principal,
     get_tenant_details,
-    update_azd_env,
     load_azd_env,
+    update_azd_env,
 )
-
 from azure.core.credentials_async import AsyncTokenCredential
 from azure.identity.aio import AzureDeveloperCliCredential, ClientSecretCredential
+from kiota_abstractions.base_request_configuration import RequestConfiguration
 from msgraph import GraphServiceClient
+from msgraph.generated.models.application import Application
+from msgraph.generated.models.implicit_grant_settings import ImplicitGrantSettings
+from msgraph.generated.models.o_auth2_permission_grant import OAuth2PermissionGrant
+from msgraph.generated.models.required_resource_access import RequiredResourceAccess
+from msgraph.generated.models.resource_access import ResourceAccess
+from msgraph.generated.models.web_application import WebApplication
 from msgraph_beta import GraphServiceClient as GraphServiceClientBeta
-from msgraph_beta.generated.models.external_users_self_service_sign_up_events_flow import (
-    ExternalUsersSelfServiceSignUpEventsFlow,
-)
 from msgraph_beta.generated.identity.authentication_events_flows.authentication_events_flows_request_builder import (
     AuthenticationEventsFlowsRequestBuilder,
-)
-from msgraph_beta.generated.models.built_in_identity_provider import BuiltInIdentityProvider
-from msgraph_beta.generated.models.on_user_create_start_external_users_self_service_sign_up import (
-    OnUserCreateStartExternalUsersSelfServiceSignUp,
-)
-from msgraph_beta.generated.models.on_interactive_auth_flow_start_external_users_self_service_sign_up import (
-    OnInteractiveAuthFlowStartExternalUsersSelfServiceSignUp,
-)
-from msgraph_beta.generated.models.on_authentication_method_load_start_external_users_self_service_sign_up import (
-    OnAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp,
-)
-from msgraph_beta.generated.models.on_attribute_collection_external_users_self_service_sign_up import (
-    OnAttributeCollectionExternalUsersSelfServiceSignUp,
-)
-from msgraph_beta.generated.models.identity_user_flow_attribute import IdentityUserFlowAttribute
-from msgraph_beta.generated.models.authentication_condition_application import AuthenticationConditionApplication
-from msgraph_beta.generated.models.authentication_attribute_collection_page import AuthenticationAttributeCollectionPage
-from msgraph_beta.generated.models.authentication_attribute_collection_page_view_configuration import (
-    AuthenticationAttributeCollectionPageViewConfiguration,
 )
 from msgraph_beta.generated.models.authentication_attribute_collection_input_configuration import (
     AuthenticationAttributeCollectionInputConfiguration,
@@ -50,17 +34,32 @@ from msgraph_beta.generated.models.authentication_attribute_collection_input_con
 from msgraph_beta.generated.models.authentication_attribute_collection_input_type import (
     AuthenticationAttributeCollectionInputType,
 )
+from msgraph_beta.generated.models.authentication_attribute_collection_page import AuthenticationAttributeCollectionPage
+from msgraph_beta.generated.models.authentication_attribute_collection_page_view_configuration import (
+    AuthenticationAttributeCollectionPageViewConfiguration,
+)
+from msgraph_beta.generated.models.authentication_condition_application import AuthenticationConditionApplication
+from msgraph_beta.generated.models.built_in_identity_provider import BuiltInIdentityProvider
+from msgraph_beta.generated.models.external_users_self_service_sign_up_events_flow import (
+    ExternalUsersSelfServiceSignUpEventsFlow,
+)
+from msgraph_beta.generated.models.identity_user_flow_attribute import IdentityUserFlowAttribute
+from msgraph_beta.generated.models.on_attribute_collection_external_users_self_service_sign_up import (
+    OnAttributeCollectionExternalUsersSelfServiceSignUp,
+)
+from msgraph_beta.generated.models.on_authentication_method_load_start_external_users_self_service_sign_up import (
+    OnAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp,
+)
+from msgraph_beta.generated.models.on_interactive_auth_flow_start_external_users_self_service_sign_up import (
+    OnInteractiveAuthFlowStartExternalUsersSelfServiceSignUp,
+)
+from msgraph_beta.generated.models.on_user_create_start_external_users_self_service_sign_up import (
+    OnUserCreateStartExternalUsersSelfServiceSignUp,
+)
 from msgraph_beta.generated.models.user_type import UserType
-from msgraph.generated.models.o_auth2_permission_grant import OAuth2PermissionGrant
 from msgraph_beta.generated.oauth2_permission_grants.oauth2_permission_grants_request_builder import (
     Oauth2PermissionGrantsRequestBuilder,
 )
-from msgraph.generated.models.application import Application
-from msgraph.generated.models.implicit_grant_settings import ImplicitGrantSettings
-from msgraph.generated.models.required_resource_access import RequiredResourceAccess
-from msgraph.generated.models.resource_access import ResourceAccess
-from msgraph.generated.models.web_application import WebApplication
-from kiota_abstractions.base_request_configuration import RequestConfiguration
 from rich.logging import RichHandler
 
 logging.basicConfig(
@@ -287,7 +286,7 @@ def get_credential(tenant_id: str) -> AsyncTokenCredential:
 
 async def main():
     tenant_id = os.getenv("AZURE_AUTH_TENANT_ID", None)
-    logger.info("Setting up authentication for tenant %s" % tenant_id)
+    logger.info(f"Setting up authentication for tenant {tenant_id}")
     try:
         credential = get_credential(tenant_id)
         scopes = ["https://graph.microsoft.com/.default"]
