@@ -3,8 +3,8 @@ import json
 import os
 
 import azure.identity.aio
-from azure.keyvault.secrets.aio import SecretClient
 import openai
+from azure.keyvault.secrets.aio import SecretClient
 from openai import AsyncOpenAI
 from quart import (
     Blueprint,

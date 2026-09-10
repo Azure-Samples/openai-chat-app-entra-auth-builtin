@@ -3,7 +3,7 @@ target-version = "py311"
 line-length = 120
 src = ["src"]
 
-[tool.lint]
+[tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]

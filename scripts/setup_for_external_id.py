@@ -8,16 +8,16 @@ from auth_common import (
     get_current_user,
     get_microsoft_graph_service_principal,
     get_tenant_details,
-    update_azd_env,
     load_azd_env,
+    update_azd_env,
 )
 from azure.identity.aio import AzureDeveloperCliCredential
 from msgraph import GraphServiceClient
+from msgraph.generated.models.app_role_assignment import AppRoleAssignment
 from msgraph.generated.models.application import Application
+from msgraph.generated.models.o_data_errors.o_data_error import ODataError
 from msgraph.generated.models.required_resource_access import RequiredResourceAccess
 from msgraph.generated.models.resource_access import ResourceAccess
-from msgraph.generated.models.o_data_errors.o_data_error import ODataError
-from msgraph.generated.models.app_role_assignment import AppRoleAssignment
 from rich.logging import RichHandler
 
 logging.basicConfig(

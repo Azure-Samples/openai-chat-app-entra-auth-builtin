@@ -1,5 +1,5 @@
-from unittest import mock
 import os
+from unittest import mock
 
 import pytest
 from openai import AsyncOpenAI
