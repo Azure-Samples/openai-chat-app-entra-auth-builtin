@@ -1,11 +1,12 @@
-import os
-import subprocess
 import json
 import logging
+import os
+import subprocess
 import time
 
 import aiohttp
 from azure.core.credentials_async import AsyncTokenCredential
+from dotenv import load_dotenv
 from kiota_abstractions.api_error import APIError
 from kiota_abstractions.base_request_configuration import RequestConfiguration
 from msgraph import GraphServiceClient
@@ -14,11 +15,9 @@ from msgraph.generated.applications.item.add_password.add_password_post_request_
 )
 from msgraph.generated.models.application import Application
 from msgraph.generated.models.password_credential import PasswordCredential
+from msgraph.generated.models.reference_create import ReferenceCreate
 from msgraph.generated.models.service_principal import ServicePrincipal
 from msgraph.generated.service_principals.service_principals_request_builder import ServicePrincipalsRequestBuilder
-from msgraph.generated.models.reference_create import ReferenceCreate
-
-from dotenv import load_dotenv
 
 logger = logging.getLogger("authsetup")
 
