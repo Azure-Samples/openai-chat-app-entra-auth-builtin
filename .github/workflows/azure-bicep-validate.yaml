@@ -15,10 +15,10 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Azure CLI script
-        uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
+        uses: azure/CLI@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
         with:
           inlineScript: |
             export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
@@ -34,7 +34,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run PSRule analysis
         uses: microsoft/ps-rule@46451b8f5258c41beb5ae69ed7190ccbba84112c # v2.9.0
