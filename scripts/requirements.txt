@@ -138,7 +138,7 @@ pycparser==3.0
     # via cffi
 pygments==2.19.2
     # via rich
-pyjwt[crypto]==2.12.1
+pyjwt[crypto]==2.15.0
     # via
     #   msal
     #   pyjwt
